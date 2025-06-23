@@ -55,6 +55,7 @@
 - 多线程处理避免UI卡顿
 
 主要类：
+
 - `VideoThread`：视频处理线程，处理实时视频流
 - `FaceDetectionApp`：主应用窗口，提供用户界面和控制功能
 
@@ -69,6 +70,7 @@
 - 中文文本渲染支持
 
 主要函数：
+
 - `download_face_model()`：下载YOLOv11人脸检测模型
 - `load_font()`：加载中文字体
 - `cv2_add_chinese_text()`：在OpenCV图像上添加中文文本
@@ -85,6 +87,7 @@
 - 结果可视化与保存
 
 主要函数：
+
 - `recognize_emotion()`：识别图片中的人脸表情
 
 ### 4. train.py
@@ -131,9 +134,9 @@ python image_emotion_recognition.py 图片路径
 ### 命令行使用（人脸检测）
 
 ```bash
-python yolo_face_detection.py --image 图片路径  # 图片模式
-python yolo_face_detection.py --video 视频路径  # 视频模式
-python yolo_face_detection.py --camera          # 摄像头模式
+python yolo_face_detection.py --image 图片路径 # 图片模式
+python yolo_face_detection.py --video 视频路径 # 视频模式
+python yolo_face_detection.py --camera     # 摄像头模式
 ```
 
 ### 训练自己的模型
@@ -141,6 +144,7 @@ python yolo_face_detection.py --camera          # 摄像头模式
 1. 准备数据集并按YOLO格式组织（可使用`split_dataset_for_yolo.py`辅助）
 2. 修改`train.py`中的数据集路径和参数
 3. 运行训练脚本
+
 ```bash
 python train.py
 ```
@@ -148,6 +152,7 @@ python train.py
 ## 表情类别
 
 系统可以识别的表情类别包括：
+
 - 愤怒（Angry）
 - 厌恶（Disgust）
 - 高兴（Happy）
@@ -183,4 +188,4 @@ pip install ultralytics opencv-python PyQt5 pillow numpy torch torchvision
 1. 首次运行时，系统会自动下载所需的预训练模型
 2. 表情识别在灯光良好的环境下效果更佳
 3. 对于视频文件处理，建议使用较高配置的计算机以获得更流畅的体验
-4. 系统会自动检测并使用系统中可用的中文字体，如果没有找到合适的字体，中文显示可能会出现乱码 
+4. 系统会自动检测并使用系统中可用的中文字体，如果没有找到合适的字体，中文显示可能会出现乱码
