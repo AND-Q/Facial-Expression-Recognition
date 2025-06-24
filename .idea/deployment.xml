@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="blinx@192.168.4.43:22 password (2)" deleteMissingItems="true" createEmptyFolders="true" confirmBeforeUploading="false" confirmBeforeDeletion="false">
+    <option name="confirmBeforeDeletion" value="false" />
+    <option name="confirmBeforeUploading" value="false" />
+    <serverData>
+      <paths name="3080">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/hy-tmp" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="3090">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/shared-nvme/ultralytics-main" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="3090 (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/shared-nvme/ultralytics-main" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="3090 (3)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/shared-nvme/ultralytics-main" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="blinx@192.168.4.43:22 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/blinx/qzy/ultralytics-main" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

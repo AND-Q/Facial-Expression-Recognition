@@ -1,0 +1,97 @@
+/home/blinx/anaconda3/bin/conda run -n emotion_recognition --no-capture-output python /home/blinx/qzy/emotion_recognition/train_fer2013plus.py 
+使用设备: cuda
+正在加载数据...
+训练目录: ./data/fer2013plus/fer2013/train, 存在: True
+测试目录: ./data/fer2013plus/fer2013/test, 存在: True
+验证目录: ./data/fer2013plus/fer2013/val, 存在: False
+训练集类别映射: {'anger': 0, 'contempt': 1, 'disgust': 2, 'fear': 3, 'happiness': 4, 'neutral': 5, 'sadness': 6, 'surprise': 7}
+测试集类别映射: {'anger': 0, 'contempt': 1, 'disgust': 2, 'fear': 3, 'happiness': 4, 'neutral': 5, 'sadness': 6, 'surprise': 7}
+数据集根目录: ./data/fer2013plus/fer2013
+目录存在，内容: ['class_to_idx.json', 'train', 'test']
+类别到索引映射: {'anger': 0, 'contempt': 1, 'disgust': 2, 'fear': 3, 'happiness': 4, 'neutral': 5, 'sadness': 6, 'surprise': 7}
+数据加载完成! 训练集大小: 28386, 测试集大小: 7099
+
+检查数据集标签范围:
+图像形状: torch.Size([64, 3, 64, 64])
+标签范围: 0 到 7
+标签分布: tensor([ 5,  0,  1,  1, 14, 27, 12,  4])
+标签唯一值: tensor([0, 2, 3, 4, 5, 6, 7])
+
+创建模型...
+开始训练...
+保存最佳模型，准确率: 0.5405
+Epoch 1/50, Loss: 1.5622, Train_Acc: 0.3930, Test_Acc: 0.5405, F1: 0.2248, Recall: 0.2533, LR: 0.000100
+保存最佳模型，准确率: 0.6202
+Epoch 2/50, Loss: 1.2008, Train_Acc: 0.5913, Test_Acc: 0.6202, F1: 0.2680, Recall: 0.2965, LR: 0.000100
+保存最佳模型，准确率: 0.6788
+Epoch 3/50, Loss: 1.0313, Train_Acc: 0.6466, Test_Acc: 0.6788, F1: 0.3436, Recall: 0.3665, LR: 0.000100
+保存最佳模型，准确率: 0.6988
+Epoch 4/50, Loss: 0.9124, Train_Acc: 0.6864, Test_Acc: 0.6988, F1: 0.3676, Recall: 0.3757, LR: 0.000100
+保存最佳模型，准确率: 0.7115
+Epoch 5/50, Loss: 0.8136, Train_Acc: 0.7180, Test_Acc: 0.7115, F1: 0.4113, Recall: 0.4299, LR: 0.000100
+保存最佳模型，准确率: 0.7379
+Epoch 6/50, Loss: 0.7520, Train_Acc: 0.7388, Test_Acc: 0.7379, F1: 0.4247, Recall: 0.4303, LR: 0.000100
+保存最佳模型，准确率: 0.7422
+Epoch 7/50, Loss: 0.6929, Train_Acc: 0.7561, Test_Acc: 0.7422, F1: 0.4377, Recall: 0.4451, LR: 0.000100
+保存最佳模型，准确率: 0.7539
+Epoch 8/50, Loss: 0.6393, Train_Acc: 0.7780, Test_Acc: 0.7539, F1: 0.4591, Recall: 0.4627, LR: 0.000100
+保存最佳模型，准确率: 0.7656
+Epoch 9/50, Loss: 0.5939, Train_Acc: 0.7898, Test_Acc: 0.7656, F1: 0.4927, Recall: 0.4824, LR: 0.000100
+保存最佳模型，准确率: 0.7666
+Epoch 10/50, Loss: 0.5475, Train_Acc: 0.8113, Test_Acc: 0.7666, F1: 0.4924, Recall: 0.4760, LR: 0.000100
+保存最佳模型，准确率: 0.7718
+Epoch 11/50, Loss: 0.5057, Train_Acc: 0.8234, Test_Acc: 0.7718, F1: 0.4995, Recall: 0.4904, LR: 0.000100
+保存最佳模型，准确率: 0.7804
+Epoch 12/50, Loss: 0.4722, Train_Acc: 0.8359, Test_Acc: 0.7804, F1: 0.5680, Recall: 0.5445, LR: 0.000100
+Epoch 13/50, Loss: 0.4322, Train_Acc: 0.8499, Test_Acc: 0.7790, F1: 0.5623, Recall: 0.5470, LR: 0.000100
+Epoch 14/50, Loss: 0.4026, Train_Acc: 0.8626, Test_Acc: 0.7745, F1: 0.5750, Recall: 0.5600, LR: 0.000100
+Epoch 15/50, Loss: 0.3600, Train_Acc: 0.8759, Test_Acc: 0.7732, F1: 0.5648, Recall: 0.5486, LR: 0.000100
+Epoch 16/50, Loss: 0.3428, Train_Acc: 0.8816, Test_Acc: 0.7783, F1: 0.5806, Recall: 0.5592, LR: 0.000100
+保存最佳模型，准确率: 0.7838
+Epoch 17/50, Loss: 0.3085, Train_Acc: 0.8944, Test_Acc: 0.7838, F1: 0.5739, Recall: 0.5582, LR: 0.000100
+Epoch 18/50, Loss: 0.2818, Train_Acc: 0.9042, Test_Acc: 0.7707, F1: 0.5801, Recall: 0.5794, LR: 0.000100
+Epoch 19/50, Loss: 0.2671, Train_Acc: 0.9075, Test_Acc: 0.7807, F1: 0.5625, Recall: 0.5408, LR: 0.000100
+保存最佳模型，准确率: 0.7870
+Epoch 20/50, Loss: 0.2417, Train_Acc: 0.9163, Test_Acc: 0.7870, F1: 0.6031, Recall: 0.5757, LR: 0.000100
+保存最佳模型，准确率: 0.7942
+Epoch 21/50, Loss: 0.2279, Train_Acc: 0.9221, Test_Acc: 0.7942, F1: 0.5944, Recall: 0.5655, LR: 0.000100
+Epoch 22/50, Loss: 0.2096, Train_Acc: 0.9291, Test_Acc: 0.7759, F1: 0.6178, Recall: 0.5934, LR: 0.000100
+Epoch 23/50, Loss: 0.1954, Train_Acc: 0.9356, Test_Acc: 0.7832, F1: 0.6139, Recall: 0.5915, LR: 0.000100
+Epoch 24/50, Loss: 0.1800, Train_Acc: 0.9394, Test_Acc: 0.7935, F1: 0.6434, Recall: 0.6157, LR: 0.000100
+Epoch 25/50, Loss: 0.1727, Train_Acc: 0.9415, Test_Acc: 0.7910, F1: 0.6148, Recall: 0.5874, LR: 0.000100
+Epoch 26/50, Loss: 0.1579, Train_Acc: 0.9477, Test_Acc: 0.7814, F1: 0.6236, Recall: 0.5906, LR: 0.000100
+Epoch 27/50, Loss: 0.1489, Train_Acc: 0.9488, Test_Acc: 0.7731, F1: 0.6277, Recall: 0.6314, LR: 0.000010
+保存最佳模型，准确率: 0.8015
+Epoch 28/50, Loss: 0.0842, Train_Acc: 0.9725, Test_Acc: 0.8015, F1: 0.6632, Recall: 0.6358, LR: 0.000010
+Epoch 29/50, Loss: 0.0564, Train_Acc: 0.9818, Test_Acc: 0.8015, F1: 0.6610, Recall: 0.6361, LR: 0.000010
+保存最佳模型，准确率: 0.8026
+Epoch 30/50, Loss: 0.0463, Train_Acc: 0.9846, Test_Acc: 0.8026, F1: 0.6649, Recall: 0.6354, LR: 0.000010
+Epoch 31/50, Loss: 0.0417, Train_Acc: 0.9860, Test_Acc: 0.7991, F1: 0.6554, Recall: 0.6332, LR: 0.000010
+Epoch 32/50, Loss: 0.0363, Train_Acc: 0.9878, Test_Acc: 0.8000, F1: 0.6534, Recall: 0.6315, LR: 0.000010
+Epoch 33/50, Loss: 0.0319, Train_Acc: 0.9891, Test_Acc: 0.8026, F1: 0.6592, Recall: 0.6354, LR: 0.000010
+Epoch 34/50, Loss: 0.0314, Train_Acc: 0.9890, Test_Acc: 0.7994, F1: 0.6560, Recall: 0.6387, LR: 0.000010
+Epoch 35/50, Loss: 0.0286, Train_Acc: 0.9905, Test_Acc: 0.8010, F1: 0.6636, Recall: 0.6388, LR: 0.000010
+Epoch 36/50, Loss: 0.0227, Train_Acc: 0.9927, Test_Acc: 0.8008, F1: 0.6569, Recall: 0.6343, LR: 0.000001
+Epoch 37/50, Loss: 0.0219, Train_Acc: 0.9931, Test_Acc: 0.8012, F1: 0.6612, Recall: 0.6433, LR: 0.000001
+保存最佳模型，准确率: 0.8028
+Epoch 38/50, Loss: 0.0182, Train_Acc: 0.9943, Test_Acc: 0.8028, F1: 0.6622, Recall: 0.6411, LR: 0.000001
+保存最佳模型，准确率: 0.8035
+Epoch 39/50, Loss: 0.0181, Train_Acc: 0.9938, Test_Acc: 0.8035, F1: 0.6627, Recall: 0.6417, LR: 0.000001
+Epoch 40/50, Loss: 0.0178, Train_Acc: 0.9940, Test_Acc: 0.8031, F1: 0.6606, Recall: 0.6398, LR: 0.000001
+Epoch 41/50, Loss: 0.0166, Train_Acc: 0.9947, Test_Acc: 0.8032, F1: 0.6599, Recall: 0.6375, LR: 0.000001
+保存最佳模型，准确率: 0.8042
+Epoch 42/50, Loss: 0.0160, Train_Acc: 0.9949, Test_Acc: 0.8042, F1: 0.6594, Recall: 0.6340, LR: 0.000001
+Epoch 43/50, Loss: 0.0156, Train_Acc: 0.9948, Test_Acc: 0.8035, F1: 0.6602, Recall: 0.6364, LR: 0.000001
+Epoch 44/50, Loss: 0.0162, Train_Acc: 0.9945, Test_Acc: 0.8019, F1: 0.6599, Recall: 0.6373, LR: 0.000001
+Epoch 45/50, Loss: 0.0156, Train_Acc: 0.9950, Test_Acc: 0.8025, F1: 0.6612, Recall: 0.6403, LR: 0.000001
+Epoch 46/50, Loss: 0.0133, Train_Acc: 0.9957, Test_Acc: 0.8017, F1: 0.6600, Recall: 0.6356, LR: 0.000001
+Epoch 47/50, Loss: 0.0136, Train_Acc: 0.9957, Test_Acc: 0.8005, F1: 0.6568, Recall: 0.6365, LR: 0.000001
+Epoch 48/50, Loss: 0.0155, Train_Acc: 0.9953, Test_Acc: 0.8026, F1: 0.6577, Recall: 0.6366, LR: 0.000000
+Epoch 49/50, Loss: 0.0129, Train_Acc: 0.9959, Test_Acc: 0.8022, F1: 0.6579, Recall: 0.6360, LR: 0.000000
+Epoch 50/50, Loss: 0.0127, Train_Acc: 0.9955, Test_Acc: 0.8022, F1: 0.6577, Recall: 0.6358, LR: 0.000000
+
+训练总耗时：00:35:11（时:分:秒）
+最佳测试准确率: 0.8042
+训练曲线已保存至 ./result_fer2013plus/fig/training_curves.png
+
+Process finished with exit code 0
