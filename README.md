@@ -324,11 +324,6 @@
    4. PyQt5文档: https://doc.qt.io/qtforpython/
    5. OpenCV文档: https://docs.opencv.org/
 
-   
-
-   ## 联系方式
-
-   qq:1830699248
 
 
    ---
