@@ -13,6 +13,11 @@
    5. **多模型支持**：集成了多个训练模型，包括综合数据集模型、FER2013增强模型等
    6. **结果可视化与保存**：处理结果可以实时显示并保存为图像或视频文件
 
+
+   ## CSDN链接：
+   https://blog.csdn.net/apple_62565719/article/details/148848994?spm=1001.2014.3001.5501
+   
+
    ## 系统截图（部分）
    ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ad0ebb3031e84da8a89cef865a1edf9b.png)
 
