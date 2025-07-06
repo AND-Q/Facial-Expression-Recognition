@@ -330,7 +330,9 @@
    5. OpenCV文档: https://docs.opencv.org/
 
 
-
+   ## 联系方式
+   有问题可以在csdn留言：https://blog.csdn.net/apple_62565719/article/details/148848994?spm=1001.2014.3001.5501
+   
    ---
 
    以上就是基于YOLOv11的实时人脸表情识别系统的详细介绍。如果您对该系统有任何疑问或建议，欢迎在评论区留言交流！
