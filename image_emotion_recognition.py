@@ -4,7 +4,8 @@ import argparse
 from ultralytics import YOLO
 import os
 from PIL import Image, ImageDraw, ImageFont
-
+# from PIL import ImageFont, ImageDraw, Image
+# 这是一个Python脚本，用于使用YOLO模型识别图片中的人脸表情。
 # nice to meet you, I am a Python script for image emotion recognition using YOLO model.
 def recognize_emotion(image_path):
     """
