@@ -5,7 +5,7 @@ from ultralytics import YOLO
 import os
 from PIL import Image, ImageDraw, ImageFont
 
-
+# nice to meet you, I am a Python script for image emotion recognition using YOLO model.
 def recognize_emotion(image_path):
     """
     识别图片中的人脸表情
