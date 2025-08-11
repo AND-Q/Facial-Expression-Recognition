@@ -1,27 +1,43 @@
 # 修改后的代码
 
-import sys
 import os
+import sys
+
 import cv2
 import numpy as np
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QHBoxLayout,
-                             QWidget, QFileDialog, QComboBox, QSlider, QStyle, QStyleFactory,
-                             QFrame, QSplitter, QGroupBox, QGridLayout, QMessageBox, QProgressBar)
-from PyQt5.QtGui import QPixmap, QImage, QFont, QPalette, QColor, QIcon
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread, QSize
-import qdarkstyle
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtGui import QFont, QImage, QPixmap
+from PyQt5.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QFileDialog,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QSlider,
+    QStyleFactory,
+    QVBoxLayout,
+    QWidget,
+)
+
 from ultralytics import YOLO
 
 # 导入原有的人脸检测函数
-from yolo_face_detection import download_face_model, load_font, cv2_add_chinese_text
+from yolo_face_detection import cv2_add_chinese_text, download_face_model, load_font
 
 
 class VideoThread(QThread):
-    """视频处理线程，避免UI卡顿"""
+    """视频处理线程，避免UI卡顿."""
+
     change_pixmap_signal = pyqtSignal(np.ndarray)
     progress_signal = pyqtSignal(int)
 
-    def __init__(self, mode='camera', file_path=None):
+    def __init__(self, mode="camera", file_path=None):
         super().__init__()
         self.mode = mode
         self.file_path = file_path
@@ -42,10 +58,10 @@ class VideoThread(QThread):
         font = load_font()
 
         # 表情标签
-        emotion_labels = ['愤怒', '厌恶', '高兴', '中性', '悲伤', '惊讶']
+        emotion_labels = ["愤怒", "厌恶", "高兴", "中性", "悲伤", "惊讶"]
 
         # 初始化视频源
-        if self.mode == 'camera':
+        if self.mode == "camera":
             cap = cv2.VideoCapture(0)
         else:
             cap = cv2.VideoCapture(self.file_path)
@@ -54,10 +70,10 @@ class VideoThread(QThread):
             return
 
         frame_count = 0
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) if self.mode == 'video' else 0
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) if self.mode == "video" else 0
 
         # 图片模式特殊处理
-        if self.mode == 'image':
+        if self.mode == "image":
             # 读取单张图片
             ret, frame = cap.read()
             if ret:
@@ -139,7 +155,7 @@ class VideoThread(QThread):
                 break
 
             frame_count += 1
-            if self.mode == 'video' and total_frames > 0:
+            if self.mode == "video" and total_frames > 0:
                 progress = int((frame_count / total_frames) * 100)
                 self.progress_signal.emit(progress)
 
@@ -211,7 +227,7 @@ class VideoThread(QThread):
             self.change_pixmap_signal.emit(frame)
 
             # 控制帧率
-            if self.mode == 'camera':
+            if self.mode == "camera":
                 cv2.waitKey(1)
 
         cap.release()
@@ -236,7 +252,7 @@ class FaceDetectionApp(QMainWindow):
             "综合数据集模型": "runs/classify/datasets_plus_optimized/weights/best.pt",
             "FER2013增强模型": "runs/classify/fer2013_plus_optimized/weights/best.pt",
             "AffectNet模型": "runs/classify/affectnet_optimized/weights/best.pt",
-            "我的自定义数据集模型": "runs/classify/my_datasets_optimized/weights/best.pt"
+            "我的自定义数据集模型": "runs/classify/my_datasets_optimized/weights/best.pt",
         }
 
         # 初始化UI
@@ -610,7 +626,7 @@ class FaceDetectionApp(QMainWindow):
             self.emotion_models = {}
 
     def change_emotion_model(self):
-        """切换表情识别模型"""
+        """切换表情识别模型."""
         model_name = self.model_combo.currentText()
 
         # 如果模型已加载，直接使用
@@ -636,7 +652,7 @@ class FaceDetectionApp(QMainWindow):
             QMessageBox.warning(self, "警告", f"模型文件 {model_path} 不存在")
 
     def mode_changed(self):
-        """处理模式变更"""
+        """处理模式变更."""
         mode = self.mode_combo.currentIndex()
 
         # 启用/禁用文件选择按钮
@@ -648,7 +664,7 @@ class FaceDetectionApp(QMainWindow):
             self.selected_file = None
 
     def select_file(self):
-        """选择文件对话框"""
+        """选择文件对话框."""
         mode = self.mode_combo.currentIndex()
 
         if mode == 1:  # 图片模式
@@ -656,16 +672,14 @@ class FaceDetectionApp(QMainWindow):
         else:  # 视频模式
             file_filter = "视频文件 (*.mp4 *.avi *.mov *.mkv)"
 
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "选择文件", "", file_filter
-        )
+        file_path, _ = QFileDialog.getOpenFileName(self, "选择文件", "", file_filter)
 
         if file_path:
             self.selected_file = file_path
             self.file_label.setText(os.path.basename(file_path))
 
     def update_conf_threshold(self):
-        """更新置信度阈值"""
+        """更新置信度阈值."""
         value = self.conf_slider.value() / 100.0
         self.conf_value_label.setText(f"{value:.2f}")
 
@@ -674,7 +688,7 @@ class FaceDetectionApp(QMainWindow):
             self.video_thread.set_conf_threshold(self.conf_slider.value())
 
     def toggle_detection(self):
-        """开始/停止检测"""
+        """开始/停止检测."""
         if self.video_thread and self.video_thread.isRunning():
             # 停止检测
             self.video_thread.stop()
@@ -723,11 +737,11 @@ class FaceDetectionApp(QMainWindow):
 
             # 创建并启动视频线程
             if mode == 0:  # 摄像头模式
-                self.video_thread = VideoThread(mode='camera')
+                self.video_thread = VideoThread(mode="camera")
             elif mode == 1:  # 图片模式
-                self.video_thread = VideoThread(mode='image', file_path=self.selected_file)
+                self.video_thread = VideoThread(mode="image", file_path=self.selected_file)
             else:  # 视频模式
-                self.video_thread = VideoThread(mode='video', file_path=self.selected_file)
+                self.video_thread = VideoThread(mode="video", file_path=self.selected_file)
 
             # 设置模型
             self.video_thread.set_models(self.face_model, self.emotion_model)
@@ -743,18 +757,19 @@ class FaceDetectionApp(QMainWindow):
             # 对于图片模式，需要在线程结束后自动更新UI状态
             if mode == 1:  # 图片模式
                 self.video_thread.finished.connect(lambda: self.image_processed_callback())
+
     def update_image(self, cv_img):
-        """更新图像显示"""
+        """更新图像显示."""
         qt_img = self.convert_cv_qt(cv_img)
         self.image_label.setPixmap(qt_img)
         self.current_image = cv_img.copy()
 
     def update_progress(self, value):
-        """更新进度条"""
+        """更新进度条."""
         self.progress_bar.setValue(value)
 
     def convert_cv_qt(self, cv_img):
-        """将OpenCV图像转换为QPixmap"""
+        """将OpenCV图像转换为QPixmap."""
         rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
@@ -763,15 +778,13 @@ class FaceDetectionApp(QMainWindow):
         return QPixmap.fromImage(p)
 
     def save_result(self):
-        """保存结果"""
-        if not hasattr(self, 'current_image'):
+        """保存结果."""
+        if not hasattr(self, "current_image"):
             QMessageBox.warning(self, "警告", "没有可保存的结果")
             return
 
         # 选择保存路径
-        file_path, _ = QFileDialog.getSaveFileName(
-            self, "保存结果", "", "图片文件 (*.jpg *.png)"
-        )
+        file_path, _ = QFileDialog.getSaveFileName(self, "保存结果", "", "图片文件 (*.jpg *.png)")
 
         if file_path:
             try:
@@ -784,7 +797,7 @@ class FaceDetectionApp(QMainWindow):
                 QMessageBox.critical(self, "错误", f"保存失败: {str(e)}")
 
     def closeEvent(self, event):
-        """窗口关闭事件"""
+        """窗口关闭事件."""
         # 停止视频线程
         if self.video_thread and self.video_thread.isRunning():
             self.video_thread.stop()
@@ -792,7 +805,7 @@ class FaceDetectionApp(QMainWindow):
         event.accept()
 
     def image_processed_callback(self):
-        """图片处理完成后的回调函数"""
+        """图片处理完成后的回调函数."""
         # 更新UI状态
         self.start_button.setText("开始检测")
         self.save_button.setEnabled(True)
