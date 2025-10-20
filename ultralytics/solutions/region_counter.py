@@ -1,6 +1,6 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 
-from typing import Any, List, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -52,9 +52,9 @@ class RegionCounter(BaseSolution):
     def add_region(
         self,
         name: str,
-        polygon_points: List[Tuple],
-        region_color: Tuple[int, int, int],
-        text_color: Tuple[int, int, int],
+        polygon_points: list[tuple],
+        region_color: tuple[int, int, int],
+        text_color: tuple[int, int, int],
     ) -> None:
         """
         Add a new region to the counting list based on the provided template with specific attributes.

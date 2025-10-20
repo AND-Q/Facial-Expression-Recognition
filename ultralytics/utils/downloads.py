@@ -6,7 +6,6 @@ import subprocess
 from itertools import repeat
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
-from typing import List, Tuple
 from urllib import parse, request
 
 import torch
@@ -244,7 +243,7 @@ def check_disk_space(
     return False
 
 
-def get_google_drive_file_info(link: str) -> Tuple[str, str]:
+def get_google_drive_file_info(link: str) -> tuple[str, str]:
     """
     Retrieve the direct download link and filename for a shareable Google Drive file link.
 
@@ -393,7 +392,7 @@ def get_github_assets(
     repo: str = "ultralytics/assets",
     version: str = "latest",
     retry: bool = False,
-) -> Tuple[str, List[str]]:
+) -> tuple[str, list[str]]:
     """
     Retrieve the specified version's tag and assets from a GitHub repository.
 

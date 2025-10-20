@@ -2,7 +2,7 @@
 
 from abc import abstractmethod
 from pathlib import Path
-from typing import List, Union
+from typing import Union
 
 import torch
 import torch.nn as nn
@@ -90,7 +90,7 @@ class CLIP(TextModel):
         self.device = device
         self.eval()
 
-    def tokenize(self, texts: Union[str, List[str]]):
+    def tokenize(self, texts: Union[str, list[str]]):
         """
         Convert input texts to CLIP tokens.
 
@@ -201,7 +201,7 @@ class MobileCLIP(TextModel):
         self.device = device
         self.eval()
 
-    def tokenize(self, texts: List[str]):
+    def tokenize(self, texts: list[str]):
         """
         Convert input texts to MobileCLIP tokens.
 
@@ -286,7 +286,7 @@ class MobileCLIPTS(TextModel):
         self.tokenizer = clip.clip.tokenize
         self.device = device
 
-    def tokenize(self, texts: List[str]):
+    def tokenize(self, texts: list[str]):
         """
         Convert input texts to MobileCLIP tokens.
 
