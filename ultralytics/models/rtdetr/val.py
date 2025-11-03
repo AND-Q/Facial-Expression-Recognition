@@ -1,6 +1,6 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Union
 
 import torch
 
@@ -154,8 +154,8 @@ class RTDETRValidator(DetectionValidator):
         )
 
     def postprocess(
-        self, preds: Union[torch.Tensor, List[torch.Tensor], Tuple[torch.Tensor]]
-    ) -> List[Dict[str, torch.Tensor]]:
+        self, preds: Union[torch.Tensor, list[torch.Tensor], tuple[torch.Tensor]]
+    ) -> list[dict[str, torch.Tensor]]:
         """
         Apply Non-maximum suppression to prediction outputs.
 
@@ -186,7 +186,7 @@ class RTDETRValidator(DetectionValidator):
 
         return [{"bboxes": x[:, :4], "conf": x[:, 4], "cls": x[:, 5]} for x in outputs]
 
-    def _prepare_batch(self, si: int, batch: Dict[str, Any]) -> Dict[str, Any]:
+    def _prepare_batch(self, si: int, batch: dict[str, Any]) -> dict[str, Any]:
         """
         Prepare a batch for validation by applying necessary transformations.
 
@@ -210,7 +210,7 @@ class RTDETRValidator(DetectionValidator):
             bbox[..., [1, 3]] *= ori_shape[0]  # native-space pred
         return {"cls": cls, "bboxes": bbox, "ori_shape": ori_shape, "imgsz": imgsz, "ratio_pad": ratio_pad}
 
-    def _prepare_pred(self, pred: Dict[str, torch.Tensor], pbatch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
+    def _prepare_pred(self, pred: dict[str, torch.Tensor], pbatch: dict[str, Any]) -> dict[str, torch.Tensor]:
         """
         Prepare predictions by scaling bounding boxes to original image dimensions.
 

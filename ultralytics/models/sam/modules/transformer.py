@@ -1,7 +1,6 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 
 import math
-from typing import Tuple, Type
 
 import torch
 from torch import Tensor, nn
@@ -44,7 +43,7 @@ class TwoWayTransformer(nn.Module):
         embedding_dim: int,
         num_heads: int,
         mlp_dim: int,
-        activation: Type[nn.Module] = nn.ReLU,
+        activation: type[nn.Module] = nn.ReLU,
         attention_downsample_rate: int = 2,
     ) -> None:
         """
@@ -85,7 +84,7 @@ class TwoWayTransformer(nn.Module):
         image_embedding: Tensor,
         image_pe: Tensor,
         point_embedding: Tensor,
-    ) -> Tuple[Tensor, Tensor]:
+    ) -> tuple[Tensor, Tensor]:
         """
         Process image and point embeddings through the Two-Way Transformer.
 
@@ -162,7 +161,7 @@ class TwoWayAttentionBlock(nn.Module):
         embedding_dim: int,
         num_heads: int,
         mlp_dim: int = 2048,
-        activation: Type[nn.Module] = nn.ReLU,
+        activation: type[nn.Module] = nn.ReLU,
         attention_downsample_rate: int = 2,
         skip_first_layer_pe: bool = False,
     ) -> None:
@@ -196,7 +195,7 @@ class TwoWayAttentionBlock(nn.Module):
 
         self.skip_first_layer_pe = skip_first_layer_pe
 
-    def forward(self, queries: Tensor, keys: Tensor, query_pe: Tensor, key_pe: Tensor) -> Tuple[Tensor, Tensor]:
+    def forward(self, queries: Tensor, keys: Tensor, query_pe: Tensor, key_pe: Tensor) -> tuple[Tensor, Tensor]:
         """
         Apply two-way attention to process query and key embeddings in a transformer block.
 

@@ -8,7 +8,7 @@ Usage: See https://docs.ultralytics.com/modes/predict/
 from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import torch
@@ -47,7 +47,7 @@ class BaseTensor(SimpleClass):
         >>> gpu_tensor = base_tensor.cuda()
     """
 
-    def __init__(self, data: Union[torch.Tensor, np.ndarray], orig_shape: Tuple[int, int]) -> None:
+    def __init__(self, data: Union[torch.Tensor, np.ndarray], orig_shape: tuple[int, int]) -> None:
         """
         Initialize BaseTensor with prediction data and the original shape of the image.
 
@@ -66,7 +66,7 @@ class BaseTensor(SimpleClass):
         self.orig_shape = orig_shape
 
     @property
-    def shape(self) -> Tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         """
         Return the shape of the underlying data tensor.
 
@@ -243,13 +243,13 @@ class Results(SimpleClass, DataExportMixin):
         self,
         orig_img: np.ndarray,
         path: str,
-        names: Dict[int, str],
+        names: dict[int, str],
         boxes: Optional[torch.Tensor] = None,
         masks: Optional[torch.Tensor] = None,
         probs: Optional[torch.Tensor] = None,
         keypoints: Optional[torch.Tensor] = None,
         obb: Optional[torch.Tensor] = None,
-        speed: Optional[Dict[str, float]] = None,
+        speed: Optional[dict[str, float]] = None,
     ) -> None:
         """
         Initialize the Results class for storing and manipulating inference results.
@@ -493,7 +493,7 @@ class Results(SimpleClass, DataExportMixin):
         save: bool = False,
         filename: Optional[str] = None,
         color_mode: str = "class",
-        txt_color: Tuple[int, int, int] = (255, 255, 255),
+        txt_color: tuple[int, int, int] = (255, 255, 255),
     ) -> np.ndarray:
         """
         Plot detection results on an input RGB image.
@@ -787,7 +787,7 @@ class Results(SimpleClass, DataExportMixin):
                 BGR=True,
             )
 
-    def summary(self, normalize: bool = False, decimals: int = 5) -> List[Dict[str, Any]]:
+    def summary(self, normalize: bool = False, decimals: int = 5) -> list[dict[str, Any]]:
         """
         Convert inference results to a summarized dictionary with optional normalization for box coordinates.
 
@@ -891,7 +891,7 @@ class Boxes(BaseTensor):
         >>> print(boxes.xywhn)
     """
 
-    def __init__(self, boxes: Union[torch.Tensor, np.ndarray], orig_shape: Tuple[int, int]) -> None:
+    def __init__(self, boxes: Union[torch.Tensor, np.ndarray], orig_shape: tuple[int, int]) -> None:
         """
         Initialize the Boxes class with detection box data and the original image shape.
 
@@ -1100,7 +1100,7 @@ class Masks(BaseTensor):
         >>> normalized_coords = masks.xyn
     """
 
-    def __init__(self, masks: Union[torch.Tensor, np.ndarray], orig_shape: Tuple[int, int]) -> None:
+    def __init__(self, masks: Union[torch.Tensor, np.ndarray], orig_shape: tuple[int, int]) -> None:
         """
         Initialize the Masks class with detection mask data and the original image shape.
 
@@ -1121,7 +1121,7 @@ class Masks(BaseTensor):
 
     @property
     @lru_cache(maxsize=1)
-    def xyn(self) -> List[np.ndarray]:
+    def xyn(self) -> list[np.ndarray]:
         """
         Return normalized xy-coordinates of the segmentation masks.
 
@@ -1146,7 +1146,7 @@ class Masks(BaseTensor):
 
     @property
     @lru_cache(maxsize=1)
-    def xy(self) -> List[np.ndarray]:
+    def xy(self) -> list[np.ndarray]:
         """
         Return the [x, y] pixel coordinates for each segment in the mask tensor.
 
@@ -1205,7 +1205,7 @@ class Keypoints(BaseTensor):
     """
 
     @smart_inference_mode()  # avoid keypoints < conf in-place error
-    def __init__(self, keypoints: Union[torch.Tensor, np.ndarray], orig_shape: Tuple[int, int]) -> None:
+    def __init__(self, keypoints: Union[torch.Tensor, np.ndarray], orig_shape: tuple[int, int]) -> None:
         """
         Initialize the Keypoints object with detection keypoints and original image dimensions.
 
@@ -1330,7 +1330,7 @@ class Probs(BaseTensor):
         tensor([0.6000, 0.3000, 0.1000])
     """
 
-    def __init__(self, probs: Union[torch.Tensor, np.ndarray], orig_shape: Optional[Tuple[int, int]] = None) -> None:
+    def __init__(self, probs: Union[torch.Tensor, np.ndarray], orig_shape: Optional[tuple[int, int]] = None) -> None:
         """
         Initialize the Probs class with classification probabilities.
 
@@ -1380,7 +1380,7 @@ class Probs(BaseTensor):
 
     @property
     @lru_cache(maxsize=1)
-    def top5(self) -> List[int]:
+    def top5(self) -> list[int]:
         """
         Return the indices of the top 5 class probabilities.
 
@@ -1471,7 +1471,7 @@ class OBB(BaseTensor):
         >>> print(obb.cls)
     """
 
-    def __init__(self, boxes: Union[torch.Tensor, np.ndarray], orig_shape: Tuple[int, int]) -> None:
+    def __init__(self, boxes: Union[torch.Tensor, np.ndarray], orig_shape: tuple[int, int]) -> None:
         """
         Initialize an OBB (Oriented Bounding Box) instance with oriented bounding box data and original image shape.
 

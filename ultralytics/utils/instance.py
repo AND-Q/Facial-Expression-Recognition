@@ -3,7 +3,6 @@
 from collections import abc
 from itertools import repeat
 from numbers import Number
-from typing import List
 
 import numpy as np
 
@@ -140,7 +139,7 @@ class Bboxes:
         return len(self.bboxes)
 
     @classmethod
-    def concatenate(cls, boxes_list: List["Bboxes"], axis=0) -> "Bboxes":
+    def concatenate(cls, boxes_list: list["Bboxes"], axis=0) -> "Bboxes":
         """
         Concatenate a list of Bboxes objects into a single Bboxes object.
 
@@ -443,7 +442,7 @@ class Instances:
         return len(self.bboxes)
 
     @classmethod
-    def concatenate(cls, instances_list: List["Instances"], axis=0) -> "Instances":
+    def concatenate(cls, instances_list: list["Instances"], axis=0) -> "Instances":
         """
         Concatenate a list of Instances objects into a single Instances object.
 
