@@ -1,5 +1,6 @@
-import matplotlib.pyplot as plt
 import re
+
+import matplotlib.pyplot as plt
 
 # 原始日志文本（节选）
 log_text = """
@@ -63,23 +64,23 @@ epochs = list(range(1, len(losses) + 1))
 
 # 单独绘制并保存 Loss 曲线图
 plt.figure(figsize=(6, 5))
-plt.plot(epochs, losses, color='tab:red', linewidth=2, label='Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.title('Training Loss over Epochs')
+plt.plot(epochs, losses, color="tab:red", linewidth=2, label="Loss")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.title("Training Loss over Epochs")
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
-plt.savefig('./loss_curve.png')
+plt.savefig("./loss_curve.png")
 
 # 单独绘制并保存 Accuracy 曲线图
 plt.figure(figsize=(6, 5))
-plt.plot(epochs, train_accs, label='Train Accuracy', color='tab:blue', linewidth=2)
-plt.plot(epochs, test_accs, label='Test Accuracy', color='tab:green', linewidth=2)
-plt.xlabel('Epoch')
-plt.ylabel('Accuracy')
-plt.title('Training & Testing Accuracy over Epochs')
+plt.plot(epochs, train_accs, label="Train Accuracy", color="tab:blue", linewidth=2)
+plt.plot(epochs, test_accs, label="Test Accuracy", color="tab:green", linewidth=2)
+plt.xlabel("Epoch")
+plt.ylabel("Accuracy")
+plt.title("Training & Testing Accuracy over Epochs")
 plt.grid(True)
 plt.legend()
 plt.tight_layout()
-plt.savefig('./accuracy_curve.png')
+plt.savefig("./accuracy_curve.png")
