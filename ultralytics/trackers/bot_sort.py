@@ -1,7 +1,8 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 from collections import deque
-from typing import Any, List, Optional
+from typing import Any
 
 import numpy as np
 import torch
@@ -17,8 +18,7 @@ from .utils.kalman_filter import KalmanFilterXYWH
 
 
 class BOTrack(STrack):
-    """
-    An extended version of the STrack class for YOLO, adding object tracking features.
+    """An extended version of the STrack class for YOLO, adding object tracking features.
 
     This class extends the STrack class to include additional functionalities for object tracking, such as feature
     smoothing, Kalman filter prediction, and reactivation of tracks.
@@ -53,10 +53,9 @@ class BOTrack(STrack):
     shared_kalman = KalmanFilterXYWH()
 
     def __init__(
-        self, tlwh: np.ndarray, score: float, cls: int, feat: Optional[np.ndarray] = None, feat_history: int = 50
+        self, tlwh: np.ndarray, score: float, cls: int, feat: np.ndarray | None = None, feat_history: int = 50
     ):
-        """
-        Initialize a BOTrack object with temporal parameters, such as feature history, alpha, and current features.
+        """Initialize a BOTrack object with temporal parameters, such as feature history, alpha, and current features.
 
         Args:
             tlwh (np.ndarray): Bounding box coordinates in tlwh format (top left x, top left y, width, height).
@@ -102,13 +101,13 @@ class BOTrack(STrack):
 
         self.mean, self.covariance = self.kalman_filter.predict(mean_state, self.covariance)
 
-    def re_activate(self, new_track: "BOTrack", frame_id: int, new_id: bool = False) -> None:
+    def re_activate(self, new_track: BOTrack, frame_id: int, new_id: bool = False) -> None:
         """Reactivate a track with updated features and optionally assign a new ID."""
         if new_track.curr_feat is not None:
             self.update_features(new_track.curr_feat)
         super().re_activate(new_track, frame_id, new_id)
 
-    def update(self, new_track: "BOTrack", frame_id: int) -> None:
+    def update(self, new_track: BOTrack, frame_id: int) -> None:
         """Update the track with new detection information and the current frame ID."""
         if new_track.curr_feat is not None:
             self.update_features(new_track.curr_feat)
@@ -124,7 +123,7 @@ class BOTrack(STrack):
         return ret
 
     @staticmethod
-    def multi_predict(stracks: List["BOTrack"]) -> None:
+    def multi_predict(stracks: list[BOTrack]) -> None:
         """Predict the mean and covariance for multiple object tracks using a shared Kalman filter."""
         if len(stracks) <= 0:
             return
@@ -152,8 +151,7 @@ class BOTrack(STrack):
 
 
 class BOTSORT(BYTETracker):
-    """
-    An extended version of the BYTETracker class for YOLO, designed for object tracking with ReID and GMC algorithm.
+    """An extended version of the BYTETracker class for YOLO, designed for object tracking with ReID and GMC algorithm.
 
     Attributes:
         proximity_thresh (float): Threshold for spatial proximity (IoU) between tracks and detections.
@@ -175,13 +173,12 @@ class BOTSORT(BYTETracker):
         >>> bot_sort.init_track(dets, scores, cls, img)
         >>> bot_sort.multi_predict(tracks)
 
-    Note:
+    Notes:
         The class is designed to work with a YOLO object detection model and supports ReID only if enabled via args.
     """
 
     def __init__(self, args: Any, frame_rate: int = 30):
-        """
-        Initialize BOTSORT object with ReID module and GMC algorithm.
+        """Initialize BOTSORT object with ReID module and GMC algorithm.
 
         Args:
             args (Any): Parsed command-line arguments containing tracking parameters.
@@ -211,8 +208,8 @@ class BOTSORT(BYTETracker):
         return KalmanFilterXYWH()
 
     def init_track(
-        self, dets: np.ndarray, scores: np.ndarray, cls: np.ndarray, img: Optional[np.ndarray] = None
-    ) -> List[BOTrack]:
+        self, dets: np.ndarray, scores: np.ndarray, cls: np.ndarray, img: np.ndarray | None = None
+    ) -> list[BOTrack]:
         """Initialize object tracks using detection bounding boxes, scores, class labels, and optional ReID features."""
         if len(dets) == 0:
             return []
@@ -222,7 +219,7 @@ class BOTSORT(BYTETracker):
         else:
             return [BOTrack(xyxy, s, c) for (xyxy, s, c) in zip(dets, scores, cls)]  # detections
 
-    def get_dists(self, tracks: List[BOTrack], detections: List[BOTrack]) -> np.ndarray:
+    def get_dists(self, tracks: list[BOTrack], detections: list[BOTrack]) -> np.ndarray:
         """Calculate distances between tracks and detections using IoU and optionally ReID embeddings."""
         dists = matching.iou_distance(tracks, detections)
         dists_mask = dists > (1 - self.proximity_thresh)
@@ -237,7 +234,7 @@ class BOTSORT(BYTETracker):
             dists = np.minimum(dists, emb_dists)
         return dists
 
-    def multi_predict(self, tracks: List[BOTrack]) -> None:
+    def multi_predict(self, tracks: list[BOTrack]) -> None:
         """Predict the mean and covariance of multiple object tracks using a shared Kalman filter."""
         BOTrack.multi_predict(tracks)
 
@@ -251,8 +248,7 @@ class ReID:
     """YOLO model as encoder for re-identification."""
 
     def __init__(self, model: str):
-        """
-        Initialize encoder for re-identification.
+        """Initialize encoder for re-identification.
 
         Args:
             model (str): Path to the YOLO model for re-identification.
@@ -262,7 +258,7 @@ class ReID:
         self.model = YOLO(model)
         self.model(embed=[len(self.model.model.model) - 2 if ".pt" in model else -1], verbose=False, save=False)  # init
 
-    def __call__(self, img: np.ndarray, dets: np.ndarray) -> List[np.ndarray]:
+    def __call__(self, img: np.ndarray, dets: np.ndarray) -> list[np.ndarray]:
         """Extract embeddings for detected objects."""
         feats = self.model.predictor(
             [save_one_box(det, img, save=False) for det in xywh2xyxy(torch.from_numpy(dets[:, :4]))]
