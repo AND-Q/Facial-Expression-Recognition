@@ -20,6 +20,10 @@
 
    ## 系统截图（部分）
    ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ad0ebb3031e84da8a89cef865a1edf9b.png)
+   ## 遇到不能下载的问题可以百度网盘下载
+   通过网盘分享的文件：Facial-Expression-Recognition.zip
+   链接: https://pan.baidu.com/s/1Ep0NiN4NqW5SxUikEE0aUQ 提取码: 5y65 
+   --来自百度网盘超级会员v4的分享
 
 
    ## 技术原理
