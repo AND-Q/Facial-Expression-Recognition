@@ -332,6 +332,10 @@
    3. AffectNet数据集: http://mohammadmahoor.com/affectnet/
    4. PyQt5文档: https://doc.qt.io/qtforpython/
    5. OpenCV文档: https://docs.opencv.org/
+  
+   ## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=AND-Q/Facial-Expression-Recognition&type=date&legend=top-left)](https://www.star-history.com/#AND-Q/Facial-Expression-Recognition&type=date&legend=top-left)
 
 
    ## 联系方式
