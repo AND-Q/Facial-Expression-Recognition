@@ -1,12 +1,8 @@
 class ClassificationTrainer(BaseTrainer):
-    """
-    A trainer class extending BaseTrainer for training image classification models.
-    """
+    """A trainer class extending BaseTrainer for training image classification models."""
 
     def __init__(self, cfg=DEFAULT_CFG, overrides: Optional[Dict[str, Any]] = None, _callbacks=None):
-        """
-        Initialize a ClassificationTrainer object.
-        """
+        """Initialize a ClassificationTrainer object."""
         if overrides is None:
             overrides = {}
         overrides["task"] = "classify"
@@ -15,9 +11,7 @@ class ClassificationTrainer(BaseTrainer):
         super().__init__(cfg, overrides, _callbacks)
 
     def get_model(self, cfg=None, weights=None, verbose: bool = True):
-        """
-        Return a modified PyTorch model configured for training YOLO classification.
-        """
+        """Return a modified PyTorch model configured for training YOLO classification."""
         model = ClassificationModel(cfg, nc=self.data["nc"], ch=self.data["channels"], verbose=verbose and RANK == -1)
         if weights:
             model.load(weights)
