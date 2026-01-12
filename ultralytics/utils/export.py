@@ -1,8 +1,8 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
 
 import torch
 
@@ -14,12 +14,11 @@ def export_onnx(
     im: torch.Tensor,
     onnx_file: str,
     opset: int = 14,
-    input_names: List[str] = ["images"],
-    output_names: List[str] = ["output0"],
-    dynamic: Union[bool, Dict] = False,
+    input_names: list[str] = ["images"],
+    output_names: list[str] = ["output0"],
+    dynamic: bool | dict = False,
 ) -> None:
-    """
-    Export a PyTorch model to ONNX format.
+    """Export a PyTorch model to ONNX format.
 
     Args:
         torch_model (torch.nn.Module): The PyTorch model to export.
@@ -48,20 +47,19 @@ def export_onnx(
 
 def export_engine(
     onnx_file: str,
-    engine_file: Optional[str] = None,
-    workspace: Optional[int] = None,
+    engine_file: str | None = None,
+    workspace: int | None = None,
     half: bool = False,
     int8: bool = False,
     dynamic: bool = False,
-    shape: Tuple[int, int, int, int] = (1, 3, 640, 640),
-    dla: Optional[int] = None,
+    shape: tuple[int, int, int, int] = (1, 3, 640, 640),
+    dla: int | None = None,
     dataset=None,
-    metadata: Optional[Dict] = None,
+    metadata: dict | None = None,
     verbose: bool = False,
     prefix: str = "",
 ) -> None:
-    """
-    Export a YOLO model to TensorRT engine format.
+    """Export a YOLO model to TensorRT engine format.
 
     Args:
         onnx_file (str): Path to the ONNX file to be converted.
@@ -86,7 +84,7 @@ def export_engine(
         INT8 calibration requires a dataset and generates a calibration cache.
         Metadata is serialized and written to the engine file if provided.
     """
-    import tensorrt as trt  # noqa
+    import tensorrt as trt
 
     engine_file = engine_file or Path(onnx_file).with_suffix(".engine")
 
@@ -152,8 +150,7 @@ def export_engine(
         config.profiling_verbosity = trt.ProfilingVerbosity.DETAILED
 
         class EngineCalibrator(trt.IInt8Calibrator):
-            """
-            Custom INT8 calibrator for TensorRT engine optimization.
+            """Custom INT8 calibrator for TensorRT engine optimization.
 
             This calibrator provides the necessary interface for TensorRT to perform INT8 quantization calibration
             using a dataset. It handles batch generation, caching, and calibration algorithm selection.
@@ -198,7 +195,7 @@ def export_engine(
                 """Get the batch size to use for calibration."""
                 return self.batch or 1
 
-            def get_batch(self, names) -> Optional[List[int]]:
+            def get_batch(self, names) -> list[int] | None:
                 """Get the next batch to use for calibration, as a list of device memory pointers."""
                 try:
                     im0s = next(self.data_iter)["img"] / 255.0
@@ -208,7 +205,7 @@ def export_engine(
                     # Return None to signal to TensorRT there is no calibration data remaining
                     return None
 
-            def read_calibration_cache(self) -> Optional[bytes]:
+            def read_calibration_cache(self) -> bytes | None:
                 """Use existing cache instead of calibrating again, otherwise, implicitly return None."""
                 if self.cache.exists() and self.cache.suffix == ".cache":
                     return self.cache.read_bytes()
