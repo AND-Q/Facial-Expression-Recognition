@@ -1,8 +1,9 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any, List
+from typing import Any
 
 import numpy as np
 import torch
@@ -17,8 +18,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"  # Avoid OpenMP conflict on some sys
 
 
 class VisualAISearch(BaseSolution):
-    """
-    A semantic image search system that leverages OpenCLIP for generating high-quality image and text embeddings and
+    """A semantic image search system that leverages OpenCLIP for generating high-quality image and text embeddings and
     FAISS for fast similarity-based retrieval.
 
     This class aligns image and text embeddings in a shared semantic space, enabling users to search large collections
@@ -91,8 +91,7 @@ class VisualAISearch(BaseSolution):
             return self.model.encode_text(tokens).cpu().numpy()
 
     def load_or_build_index(self) -> None:
-        """
-        Load existing FAISS index or build a new one from image features.
+        """Load existing FAISS index or build a new one from image features.
 
         Checks if FAISS index and image paths exist on disk. If found, loads them directly. Otherwise, builds a new
         index by extracting features from all images in the data directory, normalizes the features, and saves both the
@@ -135,9 +134,8 @@ class VisualAISearch(BaseSolution):
 
         self.LOGGER.info(f"Indexed {len(self.image_paths)} images.")
 
-    def search(self, query: str, k: int = 30, similarity_thresh: float = 0.1) -> List[str]:
-        """
-        Return top-k semantically similar images to the given query.
+    def search(self, query: str, k: int = 30, similarity_thresh: float = 0.1) -> list[str]:
+        """Return top-k semantically similar images to the given query.
 
         Args:
             query (str): Natural language text query to search for.
@@ -167,17 +165,16 @@ class VisualAISearch(BaseSolution):
 
         return [r[0] for r in results]
 
-    def __call__(self, query: str) -> List[str]:
+    def __call__(self, query: str) -> list[str]:
         """Direct call interface for the search function."""
         return self.search(query)
 
 
 class SearchApp:
-    """
-    A Flask-based web interface for semantic image search with natural language queries.
+    """A Flask-based web interface for semantic image search with natural language queries.
 
-    This class provides a clean, responsive frontend that enables users to input natural language queries and
-    instantly view the most relevant images retrieved from the indexed database.
+    This class provides a clean, responsive frontend that enables users to input natural language queries and instantly
+    view the most relevant images retrieved from the indexed database.
 
     Attributes:
         render_template: Flask template rendering function.
@@ -195,9 +192,8 @@ class SearchApp:
         >>> app.run(debug=True)
     """
 
-    def __init__(self, data: str = "images", device: str = None) -> None:
-        """
-        Initialize the SearchApp with VisualAISearch backend.
+    def __init__(self, data: str = "images", device: str | None = None) -> None:
+        """Initialize the SearchApp with VisualAISearch backend.
 
         Args:
             data (str, optional): Path to directory containing images to index and search.

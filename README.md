@@ -5,7 +5,6 @@
    ## 系统概述
 
    本文介绍的人脸表情识别系统是一个完整的端到端解决方案，主要包含以下核心功能：
-
    1. **多输入源支持**：系统可以处理静态图像、视频文件和实时摄像头输入
    2. **实时人脸检测**：采用YOLOv11人脸检测模型，实现高效准确的人脸定位
    3. **多种表情识别**：能够识别6种基本表情（愤怒、厌恶、高兴、中性、悲伤、惊讶）
@@ -13,18 +12,19 @@
    5. **多模型支持**：集成了多个训练模型，包括综合数据集模型、FER2013增强模型等
    6. **结果可视化与保存**：处理结果可以实时显示并保存为图像或视频文件
 
-
    ## CSDN链接：
+
    https://blog.csdn.net/apple_62565719/article/details/148848994?spm=1001.2014.3001.5501
+
    ## 遇到不能下载的问题可以百度网盘下载
+
    通过网盘分享的文件：Facial-Expression-Recognition.zip
-   链接: https://pan.baidu.com/s/1Ep0NiN4NqW5SxUikEE0aUQ 提取码: 5y65 
+   链接: https://pan.baidu.com/s/1Ep0NiN4NqW5SxUikEE0aUQ 提取码: 5y65
    --来自百度网盘超级会员v4的分享
 
    ## 系统截图（部分）
+
    ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ad0ebb3031e84da8a89cef865a1edf9b.png)
-
-
 
    ## 技术原理
 
@@ -43,7 +43,6 @@
    ### 2. 表情识别
 
    表情识别采用基于YOLO架构的分类模型。我们训练了多个模型以适应不同场景：
-
    1. **综合数据集模型**：使用多个数据集联合训练，具有较好的泛化能力
    2. **FER2013增强模型**：基于增强的FER2013数据集训练，该数据集包含约35,000张带标注的人脸表情图像
    3. **AffectNet模型**：使用AffectNet数据集训练，该数据集是目前最大的面部表情数据集之一
@@ -114,26 +113,26 @@
    ```python
    # 使用YOLOv11检测人脸
    results = face_model(frame, conf=0.8)
-   
+
    # 处理检测结果
    for result in results:
        boxes = result.boxes
        for box in boxes:
            # 获取边界框坐标
            x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
-   
+
            # 扩大边界框（调整人脸框大小）
            frame_height, frame_width = frame.shape[:2]
            # 计算边界框的扩展量（框的20%）
            expand_x = int((x2 - x1) * 0.2)
            expand_y = int((y2 - y1) * 0.2)
-   
+
            # 应用扩展，但确保不超出图像边界
            x1_expanded = max(0, x1 - expand_x)
            y1_expanded = max(0, y1 - expand_y)
            x2_expanded = min(frame_width, x2 + expand_x)
            y2_expanded = min(frame_height, y2 + expand_y)
-   
+
            # 绘制扩大后的人脸框
            cv2.rectangle(frame, (x1_expanded, y1_expanded), (x2_expanded, y2_expanded), (0, 255, 0), 2)
    ```
@@ -143,7 +142,6 @@
    ### 2. 表情识别流程
 
    表情识别采用以下步骤：
-
    1. **提取人脸区域**：从原始图像中裁剪出人脸区域
    2. **预处理**：将人脸区域转换为灰度图像，以与训练数据保持一致
    3. **模型推理**：使用YOLO分类模型进行表情识别
@@ -153,24 +151,24 @@
    ```python
    # 提取扩大后的人脸区域
    face_roi = frame[y1_expanded:y2_expanded, x1_expanded:x2_expanded]
-   
+
    # 将人脸区域转换为灰度图像，与训练数据保持一致
    face_roi_gray = cv2.cvtColor(face_roi, cv2.COLOR_BGR2GRAY)
-   
+
    # 将灰度图像转换为3通道，因为YOLO模型需要3通道输入
    face_roi_gray_3ch = cv2.cvtColor(face_roi_gray, cv2.COLOR_GRAY2BGR)
-   
+
    # 使用YOLO模型进行表情识别
    emotion_results = emotion_model(face_roi_gray_3ch)
-   
+
    # 获取预测结果
    probs = emotion_results[0].probs.data.tolist()
    class_id = probs.index(max(probs))
    confidence = max(probs)
-   
+
    # 获取表情标签
    emotion = emotion_labels[class_id]
-   
+
    # 在图像上显示预测结果
    text = f"{emotion}: {confidence:.2f}"
    ```
@@ -181,11 +179,12 @@
 
    ```python
    class VideoThread(QThread):
-       """视频处理线程，避免UI卡顿"""
+       """视频处理线程，避免UI卡顿."""
+
        change_pixmap_signal = pyqtSignal(np.ndarray)
        progress_signal = pyqtSignal(int)
-   
-       def __init__(self, mode='camera', file_path=None):
+
+       def __init__(self, mode="camera", file_path=None):
            super().__init__()
            self.mode = mode
            self.file_path = file_path
@@ -208,22 +207,18 @@
        batch=256,
        imgsz=224,
        workers=6,
-   
        # 优化器设置
        optimizer="AdamW",  # 使用具有自适应动量的现代优化器
        lr0=0.001,  # 初始学习率
        lrf=0.001,  # 最终学习率因子
        warmup_epochs=5,  # 逐渐预热以防止早期不稳定
        cos_lr=True,  # 余弦退火学习率调度
-   
        # 正则化
        weight_decay=0.0005,  # L2正则化
        dropout=0.2,  # 添加dropout以提高泛化能力
-   
        # 数据增强
        augment=True,  # 启用内置增强
        mixup=0.1,  # 应用mixup增强
-   
        # 训练管理
        patience=20,  # 早停耐心值
        save_period=10,  # 每10个epoch保存一次检查点
@@ -231,7 +226,6 @@
    ```
 
    ## 系统优势与创新点
-
    1. **高效的实时处理**：采用YOLOv11算法，实现了高效的实时人脸检测和表情识别
    2. **多模型集成**：提供多个预训练模型，适应不同场景需求
    3. **友好的用户界面**：直观的图形界面，支持暗色主题，操作简便
@@ -242,7 +236,6 @@
    ## 应用场景
 
    该系统可应用于多种场景：
-
    1. **人机交互**：提升智能设备对用户情绪的感知能力
    2. **教育领域**：分析学生在学习过程中的情绪变化
    3. **安防监控**：识别异常情绪状态，提前预警
@@ -286,13 +279,12 @@
    命令行使用（人脸检测）：
 
    ```bash
-   python yolo_face_detection.py --image 图片路径  # 图片模式
-   python yolo_face_detection.py --video 视频路径  # 视频模式
-   python yolo_face_detection.py --camera          # 摄像头模式
+   python yolo_face_detection.py --image 图片路径 # 图片模式
+   python yolo_face_detection.py --video 视频路径 # 视频模式
+   python yolo_face_detection.py --camera     # 摄像头模式
    ```
 
    ### 3. 界面操作
-
    1. 选择输入源（摄像头、图像文件或视频文件）
    2. 选择表情识别模型
    3. 调整置信度阈值（影响检测灵敏度）
@@ -301,7 +293,6 @@
    6. 点击"保存结果"保存处理后的图像或视频
 
    ## 性能优化技巧
-
    1. **预处理优化**：将人脸区域转换为灰度图像，减少计算量
    2. **边界框扩展**：扩展人脸检测边界框，捕获更完整的面部特征
    3. **多线程处理**：使用QThread处理视频流，避免UI卡顿
@@ -311,7 +302,6 @@
    ## 未来展望
 
    该系统还有很大的改进和扩展空间：
-
    1. **更多表情类别**：增加更细粒度的表情分类，如困惑、专注等
    2. **跨平台支持**：开发移动端和Web版本
    3. **情绪变化分析**：实现对情绪变化趋势的追踪和分析
@@ -326,21 +316,20 @@
    随着人工智能技术的不断发展，人脸表情识别将在人机交互、情感计算等领域发挥越来越重要的作用。我们期待这个系统能为相关研究和应用提供有价值的参考。
 
    ## 参考资料
-
    1. YOLOv11: https://github.com/ultralytics/ultralytics
    2. FER2013数据集: https://www.kaggle.com/datasets/msambare/fer2013
    3. AffectNet数据集: http://mohammadmahoor.com/affectnet/
    4. PyQt5文档: https://doc.qt.io/qtforpython/
    5. OpenCV文档: https://docs.opencv.org/
-  
+
    ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=AND-Q/Facial-Expression-Recognition&type=date&legend=top-left)](https://www.star-history.com/#AND-Q/Facial-Expression-Recognition&type=date&legend=top-left)
 
+## 联系方式
 
-   ## 联系方式
-   有问题可以在csdn留言：https://blog.csdn.net/apple_62565719/article/details/148848994?spm=1001.2014.3001.5501
-   
-   ---
+有问题可以在csdn留言：https://blog.csdn.net/apple_62565719/article/details/148848994?spm=1001.2014.3001.5501
 
-   以上就是基于YOLOv11的实时人脸表情识别系统的详细介绍。如果您对该系统有任何疑问或建议，欢迎在评论区留言交流！
+---
+
+以上就是基于YOLOv11的实时人脸表情识别系统的详细介绍。如果您对该系统有任何疑问或建议，欢迎在评论区留言交流！
