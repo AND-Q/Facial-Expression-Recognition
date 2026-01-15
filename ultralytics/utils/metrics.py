@@ -1,10 +1,12 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 """Model validation metrics."""
 
+from __future__ import annotations
+
 import math
 import warnings
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 import numpy as np
 import torch
@@ -18,8 +20,7 @@ OKS_SIGMA = (
 
 
 def bbox_ioa(box1: np.ndarray, box2: np.ndarray, iou: bool = False, eps: float = 1e-7) -> np.ndarray:
-    """
-    Calculate the intersection over box2 area given box1 and box2.
+    """Calculate the intersection over box2 area given box1 and box2.
 
     Args:
         box1 (np.ndarray): A numpy array of shape (N, 4) representing N bounding boxes in x1y1x2y2 format.
@@ -50,8 +51,7 @@ def bbox_ioa(box1: np.ndarray, box2: np.ndarray, iou: bool = False, eps: float =
 
 
 def box_iou(box1: torch.Tensor, box2: torch.Tensor, eps: float = 1e-7) -> torch.Tensor:
-    """
-    Calculate intersection-over-union (IoU) of boxes.
+    """Calculate intersection-over-union (IoU) of boxes.
 
     Args:
         box1 (torch.Tensor): A tensor of shape (N, 4) representing N bounding boxes in (x1, y1, x2, y2) format.
@@ -82,19 +82,17 @@ def bbox_iou(
     CIoU: bool = False,
     eps: float = 1e-7,
 ) -> torch.Tensor:
-    """
-    Calculate the Intersection over Union (IoU) between bounding boxes.
+    """Calculate the Intersection over Union (IoU) between bounding boxes.
 
-    This function supports various shapes for `box1` and `box2` as long as the last dimension is 4.
-    For instance, you may pass tensors shaped like (4,), (N, 4), (B, N, 4), or (B, N, 1, 4).
-    Internally, the code will split the last dimension into (x, y, w, h) if `xywh=True`,
-    or (x1, y1, x2, y2) if `xywh=False`.
+    This function supports various shapes for `box1` and `box2` as long as the last dimension is 4. For instance, you
+    may pass tensors shaped like (4,), (N, 4), (B, N, 4), or (B, N, 1, 4). Internally, the code will split the last
+    dimension into (x, y, w, h) if `xywh=True`, or (x1, y1, x2, y2) if `xywh=False`.
 
     Args:
         box1 (torch.Tensor): A tensor representing one or more bounding boxes, with the last dimension being 4.
         box2 (torch.Tensor): A tensor representing one or more bounding boxes, with the last dimension being 4.
-        xywh (bool, optional): If True, input boxes are in (x, y, w, h) format. If False, input boxes are in
-                               (x1, y1, x2, y2) format.
+        xywh (bool, optional): If True, input boxes are in (x, y, w, h) format. If False, input boxes are in (x1, y1,
+            x2, y2) format.
         GIoU (bool, optional): If True, calculate Generalized IoU.
         DIoU (bool, optional): If True, calculate Distance IoU.
         CIoU (bool, optional): If True, calculate Complete IoU.
@@ -145,14 +143,13 @@ def bbox_iou(
 
 
 def mask_iou(mask1: torch.Tensor, mask2: torch.Tensor, eps: float = 1e-7) -> torch.Tensor:
-    """
-    Calculate masks IoU.
+    """Calculate masks IoU.
 
     Args:
         mask1 (torch.Tensor): A tensor of shape (N, n) where N is the number of ground truth objects and n is the
-                        product of image width and height.
-        mask2 (torch.Tensor): A tensor of shape (M, n) where M is the number of predicted objects and n is the
-                        product of image width and height.
+            product of image width and height.
+        mask2 (torch.Tensor): A tensor of shape (M, n) where M is the number of predicted objects and n is the product
+            of image width and height.
         eps (float, optional): A small value to avoid division by zero.
 
     Returns:
@@ -164,10 +161,9 @@ def mask_iou(mask1: torch.Tensor, mask2: torch.Tensor, eps: float = 1e-7) -> tor
 
 
 def kpt_iou(
-    kpt1: torch.Tensor, kpt2: torch.Tensor, area: torch.Tensor, sigma: List[float], eps: float = 1e-7
+    kpt1: torch.Tensor, kpt2: torch.Tensor, area: torch.Tensor, sigma: list[float], eps: float = 1e-7
 ) -> torch.Tensor:
-    """
-    Calculate Object Keypoint Similarity (OKS).
+    """Calculate Object Keypoint Similarity (OKS).
 
     Args:
         kpt1 (torch.Tensor): A tensor of shape (N, 17, 3) representing ground truth keypoints.
@@ -187,9 +183,8 @@ def kpt_iou(
     return ((-e).exp() * kpt_mask[:, None]).sum(-1) / (kpt_mask.sum(-1)[:, None] + eps)
 
 
-def _get_covariance_matrix(boxes: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    """
-    Generate covariance matrix from oriented bounding boxes.
+def _get_covariance_matrix(boxes: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Generate covariance matrix from oriented bounding boxes.
 
     Args:
         boxes (torch.Tensor): A tensor of shape (N, 5) representing rotated bounding boxes, with xywhr format.
@@ -208,8 +203,7 @@ def _get_covariance_matrix(boxes: torch.Tensor) -> Tuple[torch.Tensor, torch.Ten
 
 
 def probiou(obb1: torch.Tensor, obb2: torch.Tensor, CIoU: bool = False, eps: float = 1e-7) -> torch.Tensor:
-    """
-    Calculate probabilistic IoU between oriented bounding boxes.
+    """Calculate probabilistic IoU between oriented bounding boxes.
 
     Args:
         obb1 (torch.Tensor): Ground truth OBBs, shape (N, 5), format xywhr.
@@ -253,11 +247,8 @@ def probiou(obb1: torch.Tensor, obb2: torch.Tensor, CIoU: bool = False, eps: flo
     return iou
 
 
-def batch_probiou(
-    obb1: Union[torch.Tensor, np.ndarray], obb2: Union[torch.Tensor, np.ndarray], eps: float = 1e-7
-) -> torch.Tensor:
-    """
-    Calculate the probabilistic IoU between oriented bounding boxes.
+def batch_probiou(obb1: torch.Tensor | np.ndarray, obb2: torch.Tensor | np.ndarray, eps: float = 1e-7) -> torch.Tensor:
+    """Calculate the probabilistic IoU between oriented bounding boxes.
 
     Args:
         obb1 (torch.Tensor | np.ndarray): A tensor of shape (N, 5) representing ground truth obbs, with xywhr format.
@@ -292,9 +283,8 @@ def batch_probiou(
     return 1 - hd
 
 
-def smooth_bce(eps: float = 0.1) -> Tuple[float, float]:
-    """
-    Compute smoothed positive and negative Binary Cross-Entropy targets.
+def smooth_bce(eps: float = 0.1) -> tuple[float, float]:
+    """Compute smoothed positive and negative Binary Cross-Entropy targets.
 
     Args:
         eps (float, optional): The epsilon value for label smoothing.
@@ -310,8 +300,7 @@ def smooth_bce(eps: float = 0.1) -> Tuple[float, float]:
 
 
 class ConfusionMatrix(DataExportMixin):
-    """
-    A class for calculating and updating a confusion matrix for object detection and classification tasks.
+    """A class for calculating and updating a confusion matrix for object detection and classification tasks.
 
     Attributes:
         task (str): The type of task, either 'detect' or 'classify'.
@@ -320,9 +309,8 @@ class ConfusionMatrix(DataExportMixin):
         names (List[str]): The names of the classes, used as labels on the plot.
     """
 
-    def __init__(self, names: List[str] = [], task: str = "detect"):
-        """
-        Initialize a ConfusionMatrix instance.
+    def __init__(self, names: list[str] = [], task: str = "detect"):
+        """Initialize a ConfusionMatrix instance.
 
         Args:
             names (List[str], optional): Names of classes, used as labels on the plot.
@@ -334,8 +322,7 @@ class ConfusionMatrix(DataExportMixin):
         self.names = names  # name of classes
 
     def process_cls_preds(self, preds, targets):
-        """
-        Update confusion matrix for classification task.
+        """Update confusion matrix for classification task.
 
         Args:
             preds (Array[N, min(nc,5)]): Predicted class labels.
@@ -346,17 +333,16 @@ class ConfusionMatrix(DataExportMixin):
             self.matrix[p][t] += 1
 
     def process_batch(
-        self, detections: Dict[str, torch.Tensor], batch: Dict[str, Any], conf: float = 0.25, iou_thres: float = 0.45
+        self, detections: dict[str, torch.Tensor], batch: dict[str, Any], conf: float = 0.25, iou_thres: float = 0.45
     ) -> None:
-        """
-        Update confusion matrix for object detection task.
+        """Update confusion matrix for object detection task.
 
         Args:
-            detections (Dict[str, torch.Tensor]): Dictionary containing detected bounding boxes and their associated information.
-                                       Should contain 'cls', 'conf', and 'bboxes' keys, where 'bboxes' can be
-                                       Array[N, 4] for regular boxes or Array[N, 5] for OBB with angle.
-            batch (Dict[str, Any]): Batch dictionary containing ground truth data with 'bboxes' (Array[M, 4]| Array[M, 5]) and
-                'cls' (Array[M]) keys, where M is the number of ground truth objects.
+            detections (Dict[str, torch.Tensor]): Dictionary containing detected bounding boxes and their associated
+                information. Should contain 'cls', 'conf', and 'bboxes' keys, where 'bboxes' can be Array[N, 4] for
+                regular boxes or Array[N, 5] for OBB with angle.
+            batch (Dict[str, Any]): Batch dictionary containing ground truth data with 'bboxes' (Array[M, 4]| Array[M,
+                5]) and 'cls' (Array[M]) keys, where M is the number of ground truth objects.
             conf (float, optional): Confidence threshold for detections.
             iou_thres (float, optional): IoU threshold for matching detections to ground truth.
         """
@@ -411,9 +397,8 @@ class ConfusionMatrix(DataExportMixin):
         """Return the confusion matrix."""
         return self.matrix
 
-    def tp_fp(self) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Return true positives and false positives.
+    def tp_fp(self) -> tuple[np.ndarray, np.ndarray]:
+        """Return true positives and false positives.
 
         Returns:
             tp (np.ndarray): True positives.
@@ -427,8 +412,7 @@ class ConfusionMatrix(DataExportMixin):
     @TryExcept(msg="ConfusionMatrix plot failure")
     @plt_settings()
     def plot(self, normalize: bool = True, save_dir: str = "", on_plot=None):
-        """
-        Plot the confusion matrix using matplotlib and save it to a file.
+        """Plot the confusion matrix using matplotlib and save it to a file.
 
         Args:
             normalize (bool, optional): Whether to normalize the confusion matrix.
@@ -450,7 +434,7 @@ class ConfusionMatrix(DataExportMixin):
             nc = nn = n if self.task == "classify" else n + 1  # adjust for background if needed
         else:
             nc = nn = self.nc if self.task == "classify" else self.nc + 1
-        ticklabels = (self.names + ["background"]) if (0 < nn < 99) and (nn == nc) else "auto"
+        ticklabels = ([*self.names, "background"]) if (0 < nn < 99) and (nn == nc) else "auto"
         xy_ticks = np.arange(len(ticklabels))
         tick_fontsize = max(6, 15 - 0.1 * nc)  # Minimum size is 6
         label_fontsize = max(6, 12 - 0.1 * nc)
@@ -504,17 +488,18 @@ class ConfusionMatrix(DataExportMixin):
         for i in range(self.matrix.shape[0]):
             LOGGER.info(" ".join(map(str, self.matrix[i])))
 
-    def summary(self, normalize: bool = False, decimals: int = 5) -> List[Dict[str, float]]:
-        """
-        Generate a summarized representation of the confusion matrix as a list of dictionaries, with optional
-        normalization. This is useful for exporting the matrix to various formats such as CSV, XML, HTML, JSON, or SQL.
+    def summary(self, normalize: bool = False, decimals: int = 5) -> list[dict[str, float]]:
+        """Generate a summarized representation of the confusion matrix as a list of dictionaries, with optional
+        normalization. This is useful for exporting the matrix to various formats such as CSV, XML, HTML, JSON,
+        or SQL.
 
         Args:
             normalize (bool): Whether to normalize the confusion matrix values.
             decimals (int): Number of decimal places to round the output values to.
 
         Returns:
-            (List[Dict[str, float]]): A list of dictionaries, each representing one predicted class with corresponding values for all actual classes.
+            (List[Dict[str, float]]): A list of dictionaries, each representing one predicted class with corresponding
+                values for all actual classes.
 
         Examples:
             >>> results = model.val(data="coco8.yaml", plots=True)
@@ -523,7 +508,7 @@ class ConfusionMatrix(DataExportMixin):
         """
         import re
 
-        names = self.names if self.task == "classify" else self.names + ["background"]
+        names = self.names if self.task == "classify" else [*self.names, "background"]
         clean_names, seen = [], set()
         for name in names:
             clean_name = re.sub(r"[^a-zA-Z0-9_]", "_", name)
@@ -555,11 +540,10 @@ def plot_pr_curve(
     py: np.ndarray,
     ap: np.ndarray,
     save_dir: Path = Path("pr_curve.png"),
-    names: Dict[int, str] = {},
+    names: dict[int, str] = {},
     on_plot=None,
 ):
-    """
-    Plot precision-recall curve.
+    """Plot precision-recall curve.
 
     Args:
         px (np.ndarray): X values for the PR curve.
@@ -598,13 +582,12 @@ def plot_mc_curve(
     px: np.ndarray,
     py: np.ndarray,
     save_dir: Path = Path("mc_curve.png"),
-    names: Dict[int, str] = {},
+    names: dict[int, str] = {},
     xlabel: str = "Confidence",
     ylabel: str = "Metric",
     on_plot=None,
 ):
-    """
-    Plot metric-confidence curve.
+    """Plot metric-confidence curve.
 
     Args:
         px (np.ndarray): X values for the metric-confidence curve.
@@ -639,9 +622,8 @@ def plot_mc_curve(
         on_plot(save_dir)
 
 
-def compute_ap(recall: List[float], precision: List[float]) -> Tuple[float, np.ndarray, np.ndarray]:
-    """
-    Compute the average precision (AP) given the recall and precision curves.
+def compute_ap(recall: list[float], precision: list[float]) -> tuple[float, np.ndarray, np.ndarray]:
+    """Compute the average precision (AP) given the recall and precision curves.
 
     Args:
         recall (list): The recall curve.
@@ -680,12 +662,11 @@ def ap_per_class(
     plot: bool = False,
     on_plot=None,
     save_dir: Path = Path(),
-    names: Dict[int, str] = {},
+    names: dict[int, str] = {},
     eps: float = 1e-16,
     prefix: str = "",
-) -> Tuple:
-    """
-    Compute the average precision per class for object detection evaluation.
+) -> tuple:
+    """Compute the average precision per class for object detection evaluation.
 
     Args:
         tp (np.ndarray): Binary array indicating whether the detection is correct (True) or not (False).
@@ -770,8 +751,7 @@ def ap_per_class(
 
 
 class Metric(SimpleClass):
-    """
-    Class for computing evaluation metrics for Ultralytics YOLO models.
+    """Class for computing evaluation metrics for Ultralytics YOLO models.
 
     Attributes:
         p (list): Precision for each class. Shape: (nc,).
@@ -806,9 +786,8 @@ class Metric(SimpleClass):
         self.nc = 0
 
     @property
-    def ap50(self) -> Union[np.ndarray, List]:
-        """
-        Return the Average Precision (AP) at an IoU threshold of 0.5 for all classes.
+    def ap50(self) -> np.ndarray | list:
+        """Return the Average Precision (AP) at an IoU threshold of 0.5 for all classes.
 
         Returns:
             (np.ndarray | list): Array of shape (nc,) with AP50 values per class, or an empty list if not available.
@@ -816,9 +795,8 @@ class Metric(SimpleClass):
         return self.all_ap[:, 0] if len(self.all_ap) else []
 
     @property
-    def ap(self) -> Union[np.ndarray, List]:
-        """
-        Return the Average Precision (AP) at an IoU threshold of 0.5-0.95 for all classes.
+    def ap(self) -> np.ndarray | list:
+        """Return the Average Precision (AP) at an IoU threshold of 0.5-0.95 for all classes.
 
         Returns:
             (np.ndarray | list): Array of shape (nc,) with AP50-95 values per class, or an empty list if not available.
@@ -827,8 +805,7 @@ class Metric(SimpleClass):
 
     @property
     def mp(self) -> float:
-        """
-        Return the Mean Precision of all classes.
+        """Return the Mean Precision of all classes.
 
         Returns:
             (float): The mean precision of all classes.
@@ -837,8 +814,7 @@ class Metric(SimpleClass):
 
     @property
     def mr(self) -> float:
-        """
-        Return the Mean Recall of all classes.
+        """Return the Mean Recall of all classes.
 
         Returns:
             (float): The mean recall of all classes.
@@ -847,8 +823,7 @@ class Metric(SimpleClass):
 
     @property
     def map50(self) -> float:
-        """
-        Return the mean Average Precision (mAP) at an IoU threshold of 0.5.
+        """Return the mean Average Precision (mAP) at an IoU threshold of 0.5.
 
         Returns:
             (float): The mAP at an IoU threshold of 0.5.
@@ -857,8 +832,7 @@ class Metric(SimpleClass):
 
     @property
     def map75(self) -> float:
-        """
-        Return the mean Average Precision (mAP) at an IoU threshold of 0.75.
+        """Return the mean Average Precision (mAP) at an IoU threshold of 0.75.
 
         Returns:
             (float): The mAP at an IoU threshold of 0.75.
@@ -867,19 +841,18 @@ class Metric(SimpleClass):
 
     @property
     def map(self) -> float:
-        """
-        Return the mean Average Precision (mAP) over IoU thresholds of 0.5 - 0.95 in steps of 0.05.
+        """Return the mean Average Precision (mAP) over IoU thresholds of 0.5 - 0.95 in steps of 0.05.
 
         Returns:
             (float): The mAP over IoU thresholds of 0.5 - 0.95 in steps of 0.05.
         """
         return self.all_ap.mean() if len(self.all_ap) else 0.0
 
-    def mean_results(self) -> List[float]:
+    def mean_results(self) -> list[float]:
         """Return mean of results, mp, mr, map50, map."""
         return [self.mp, self.mr, self.map50, self.map]
 
-    def class_result(self, i: int) -> Tuple[float, float, float, float]:
+    def class_result(self, i: int) -> tuple[float, float, float, float]:
         """Return class-aware result, p[i], r[i], ap50[i], ap[i]."""
         return self.p[i], self.r[i], self.ap50[i], self.ap[i]
 
@@ -897,8 +870,7 @@ class Metric(SimpleClass):
         return (np.nan_to_num(np.array(self.mean_results())) * w).sum()
 
     def update(self, results: tuple):
-        """
-        Update the evaluation metrics with a new set of results.
+        """Update the evaluation metrics with a new set of results.
 
         Args:
             results (tuple): A tuple containing evaluation metrics:
@@ -927,12 +899,12 @@ class Metric(SimpleClass):
         ) = results
 
     @property
-    def curves(self) -> List:
+    def curves(self) -> list:
         """Return a list of curves for accessing specific metrics curves."""
         return []
 
     @property
-    def curves_results(self) -> List[List]:
+    def curves_results(self) -> list[list]:
         """Return a list of curves for accessing specific metrics curves."""
         return [
             [self.px, self.prec_values, "Recall", "Precision"],
@@ -943,22 +915,21 @@ class Metric(SimpleClass):
 
 
 class DetMetrics(SimpleClass, DataExportMixin):
-    """
-    Utility class for computing detection metrics such as precision, recall, and mean average precision (mAP).
+    """Utility class for computing detection metrics such as precision, recall, and mean average precision (mAP).
 
     Attributes:
         names (Dict[int, str]): A dictionary of class names.
         box (Metric): An instance of the Metric class for storing detection results.
         speed (Dict[str, float]): A dictionary for storing execution times of different parts of the detection process.
         task (str): The task type, set to 'detect'.
-        stats (Dict[str, List]): A dictionary containing lists for true positives, confidence scores, predicted classes, target classes, and target images.
+        stats (Dict[str, List]): A dictionary containing lists for true positives, confidence scores, predicted classes,
+            target classes, and target images.
         nt_per_class: Number of targets per class.
         nt_per_image: Number of targets per image.
     """
 
-    def __init__(self, names: Dict[int, str] = {}) -> None:
-        """
-        Initialize a DetMetrics instance with a save directory, plot flag, and class names.
+    def __init__(self, names: dict[int, str] = {}) -> None:
+        """Initialize a DetMetrics instance with a save directory, plot flag, and class names.
 
         Args:
             names (Dict[int, str], optional): Dictionary of class names.
@@ -971,20 +942,18 @@ class DetMetrics(SimpleClass, DataExportMixin):
         self.nt_per_class = None
         self.nt_per_image = None
 
-    def update_stats(self, stat: Dict[str, Any]) -> None:
-        """
-        Update statistics by appending new values to existing stat collections.
+    def update_stats(self, stat: dict[str, Any]) -> None:
+        """Update statistics by appending new values to existing stat collections.
 
         Args:
-            stat (Dict[str, any]): Dictionary containing new statistical values to append.
-                         Keys should match existing keys in self.stats.
+            stat (Dict[str, any]): Dictionary containing new statistical values to append. Keys should match existing
+                keys in self.stats.
         """
         for k in self.stats.keys():
             self.stats[k].append(stat[k])
 
-    def process(self, save_dir: Path = Path("."), plot: bool = False, on_plot=None) -> Dict[str, np.ndarray]:
-        """
-        Process predicted results for object detection and update metrics.
+    def process(self, save_dir: Path = Path("."), plot: bool = False, on_plot=None) -> dict[str, np.ndarray]:
+        """Process predicted results for object detection and update metrics.
 
         Args:
             save_dir (Path): Directory to save plots. Defaults to Path(".").
@@ -1019,15 +988,15 @@ class DetMetrics(SimpleClass, DataExportMixin):
             v.clear()
 
     @property
-    def keys(self) -> List[str]:
+    def keys(self) -> list[str]:
         """Return a list of keys for accessing specific metrics."""
         return ["metrics/precision(B)", "metrics/recall(B)", "metrics/mAP50(B)", "metrics/mAP50-95(B)"]
 
-    def mean_results(self) -> List[float]:
+    def mean_results(self) -> list[float]:
         """Calculate mean of detected objects & return precision, recall, mAP50, and mAP50-95."""
         return self.box.mean_results()
 
-    def class_result(self, i: int) -> Tuple[float, float, float, float]:
+    def class_result(self, i: int) -> tuple[float, float, float, float]:
         """Return the result of evaluating the performance of an object detection model on a specific class."""
         return self.box.class_result(i)
 
@@ -1042,36 +1011,36 @@ class DetMetrics(SimpleClass, DataExportMixin):
         return self.box.fitness()
 
     @property
-    def ap_class_index(self) -> List:
+    def ap_class_index(self) -> list:
         """Return the average precision index per class."""
         return self.box.ap_class_index
 
     @property
-    def results_dict(self) -> Dict[str, float]:
+    def results_dict(self) -> dict[str, float]:
         """Return dictionary of computed performance metrics and statistics."""
-        return dict(zip(self.keys + ["fitness"], self.mean_results() + [self.fitness]))
+        return dict(zip([*self.keys, "fitness"], [*self.mean_results(), self.fitness]))
 
     @property
-    def curves(self) -> List[str]:
+    def curves(self) -> list[str]:
         """Return a list of curves for accessing specific metrics curves."""
         return ["Precision-Recall(B)", "F1-Confidence(B)", "Precision-Confidence(B)", "Recall-Confidence(B)"]
 
     @property
-    def curves_results(self) -> List[List]:
+    def curves_results(self) -> list[list]:
         """Return dictionary of computed performance metrics and statistics."""
         return self.box.curves_results
 
-    def summary(self, normalize: bool = True, decimals: int = 5) -> List[Dict[str, Union[str, float]]]:
-        """
-        Generate a summarized representation of per-class detection metrics as a list of dictionaries. Includes shared
-        scalar metrics (mAP, mAP50, mAP75) alongside precision, recall, and F1-score for each class.
+    def summary(self, normalize: bool = True, decimals: int = 5) -> list[dict[str, str | float]]:
+        """Generate a summarized representation of per-class detection metrics as a list of dictionaries. Includes
+        shared scalar metrics (mAP, mAP50, mAP75) alongside precision, recall, and F1-score for each class.
 
         Args:
-           normalize (bool): For Detect metrics, everything is normalized  by default [0-1].
-           decimals (int): Number of decimal places to round the metrics values to.
+            normalize (bool): For Detect metrics, everything is normalized by default [0-1].
+            decimals (int): Number of decimal places to round the metrics values to.
 
         Returns:
-           (List[Dict[str, Union[str, float]]]): A list of dictionaries, each representing one class with corresponding metric values.
+            (List[Dict[str, Union[str, float]]]): A list of dictionaries, each representing one class with corresponding
+                metric values.
 
         Examples:
            >>> results = model.val(data="coco8.yaml")
@@ -1099,8 +1068,7 @@ class DetMetrics(SimpleClass, DataExportMixin):
 
 
 class SegmentMetrics(DetMetrics):
-    """
-    Calculate and aggregate detection and segmentation metrics over a given set of classes.
+    """Calculate and aggregate detection and segmentation metrics over a given set of classes.
 
     Attributes:
         names (Dict[int, str]): Dictionary of class names.
@@ -1108,14 +1076,14 @@ class SegmentMetrics(DetMetrics):
         seg (Metric): An instance of the Metric class to calculate mask segmentation metrics.
         speed (Dict[str, float]): A dictionary for storing execution times of different parts of the detection process.
         task (str): The task type, set to 'segment'.
-        stats (Dict[str, List]): A dictionary containing lists for true positives, confidence scores, predicted classes, target classes, and target images.
+        stats (Dict[str, List]): A dictionary containing lists for true positives, confidence scores, predicted classes,
+            target classes, and target images.
         nt_per_class: Number of targets per class.
         nt_per_image: Number of targets per image.
     """
 
-    def __init__(self, names: Dict[int, str] = {}) -> None:
-        """
-        Initialize a SegmentMetrics instance with a save directory, plot flag, and class names.
+    def __init__(self, names: dict[int, str] = {}) -> None:
+        """Initialize a SegmentMetrics instance with a save directory, plot flag, and class names.
 
         Args:
             names (Dict[int, str], optional): Dictionary of class names.
@@ -1125,9 +1093,8 @@ class SegmentMetrics(DetMetrics):
         self.task = "segment"
         self.stats["tp_m"] = []  # add additional stats for masks
 
-    def process(self, save_dir: Path = Path("."), plot: bool = False, on_plot=None) -> Dict[str, np.ndarray]:
-        """
-        Process the detection and segmentation metrics over the given set of predictions.
+    def process(self, save_dir: Path = Path("."), plot: bool = False, on_plot=None) -> dict[str, np.ndarray]:
+        """Process the detection and segmentation metrics over the given set of predictions.
 
         Args:
             save_dir (Path): Directory to save plots. Defaults to Path(".").
@@ -1154,20 +1121,21 @@ class SegmentMetrics(DetMetrics):
         return stats
 
     @property
-    def keys(self) -> List[str]:
+    def keys(self) -> list[str]:
         """Return a list of keys for accessing metrics."""
-        return DetMetrics.keys.fget(self) + [
+        return [
+            *DetMetrics.keys.fget(self),
             "metrics/precision(M)",
             "metrics/recall(M)",
             "metrics/mAP50(M)",
             "metrics/mAP50-95(M)",
         ]
 
-    def mean_results(self) -> List[float]:
+    def mean_results(self) -> list[float]:
         """Return the mean metrics for bounding box and segmentation results."""
         return DetMetrics.mean_results(self) + self.seg.mean_results()
 
-    def class_result(self, i: int) -> List[float]:
+    def class_result(self, i: int) -> list[float]:
         """Return classification results for a specified class index."""
         return DetMetrics.class_result(self, i) + self.seg.class_result(i)
 
@@ -1182,9 +1150,10 @@ class SegmentMetrics(DetMetrics):
         return self.seg.fitness() + DetMetrics.fitness.fget(self)
 
     @property
-    def curves(self) -> List[str]:
+    def curves(self) -> list[str]:
         """Return a list of curves for accessing specific metrics curves."""
-        return DetMetrics.curves.fget(self) + [
+        return [
+            *DetMetrics.curves.fget(self),
             "Precision-Recall(M)",
             "F1-Confidence(M)",
             "Precision-Confidence(M)",
@@ -1192,21 +1161,22 @@ class SegmentMetrics(DetMetrics):
         ]
 
     @property
-    def curves_results(self) -> List[List]:
+    def curves_results(self) -> list[list]:
         """Return dictionary of computed performance metrics and statistics."""
         return DetMetrics.curves_results.fget(self) + self.seg.curves_results
 
-    def summary(self, normalize: bool = True, decimals: int = 5) -> List[Dict[str, Union[str, float]]]:
-        """
-        Generate a summarized representation of per-class segmentation metrics as a list of dictionaries. Includes both
-        box and mask scalar metrics (mAP, mAP50, mAP75) alongside precision, recall, and F1-score for each class.
+    def summary(self, normalize: bool = True, decimals: int = 5) -> list[dict[str, str | float]]:
+        """Generate a summarized representation of per-class segmentation metrics as a list of dictionaries. Includes
+        both box and mask scalar metrics (mAP, mAP50, mAP75) alongside precision, recall, and F1-score for
+        each class.
 
         Args:
-            normalize (bool): For Segment metrics, everything is normalized  by default [0-1].
+            normalize (bool): For Segment metrics, everything is normalized by default [0-1].
             decimals (int): Number of decimal places to round the metrics values to.
 
         Returns:
-            (List[Dict[str, Union[str, float]]]): A list of dictionaries, each representing one class with corresponding metric values.
+            (List[Dict[str, Union[str, float]]]): A list of dictionaries, each representing one class with corresponding
+                metric values.
 
         Examples:
             >>> results = model.val(data="coco8-seg.yaml")
@@ -1230,8 +1200,7 @@ class SegmentMetrics(DetMetrics):
 
 
 class PoseMetrics(DetMetrics):
-    """
-    Calculate and aggregate detection and pose metrics over a given set of classes.
+    """Calculate and aggregate detection and pose metrics over a given set of classes.
 
     Attributes:
         names (Dict[int, str]): Dictionary of class names.
@@ -1239,7 +1208,8 @@ class PoseMetrics(DetMetrics):
         box (Metric): An instance of the Metric class for storing detection results.
         speed (Dict[str, float]): A dictionary for storing execution times of different parts of the detection process.
         task (str): The task type, set to 'pose'.
-        stats (Dict[str, List]): A dictionary containing lists for true positives, confidence scores, predicted classes, target classes, and target images.
+        stats (Dict[str, List]): A dictionary containing lists for true positives, confidence scores, predicted classes,
+            target classes, and target images.
         nt_per_class: Number of targets per class.
         nt_per_image: Number of targets per image.
 
@@ -1253,9 +1223,8 @@ class PoseMetrics(DetMetrics):
         results_dict: Return the dictionary containing all the detection and segmentation metrics and fitness score.
     """
 
-    def __init__(self, names: Dict[int, str] = {}) -> None:
-        """
-        Initialize the PoseMetrics class with directory path, class names, and plotting options.
+    def __init__(self, names: dict[int, str] = {}) -> None:
+        """Initialize the PoseMetrics class with directory path, class names, and plotting options.
 
         Args:
             names (Dict[int, str], optional): Dictionary of class names.
@@ -1265,9 +1234,8 @@ class PoseMetrics(DetMetrics):
         self.task = "pose"
         self.stats["tp_p"] = []  # add additional stats for pose
 
-    def process(self, save_dir: Path = Path("."), plot: bool = False, on_plot=None) -> Dict[str, np.ndarray]:
-        """
-        Process the detection and pose metrics over the given set of predictions.
+    def process(self, save_dir: Path = Path("."), plot: bool = False, on_plot=None) -> dict[str, np.ndarray]:
+        """Process the detection and pose metrics over the given set of predictions.
 
         Args:
             save_dir (Path): Directory to save plots. Defaults to Path(".").
@@ -1294,20 +1262,21 @@ class PoseMetrics(DetMetrics):
         return stats
 
     @property
-    def keys(self) -> List[str]:
+    def keys(self) -> list[str]:
         """Return list of evaluation metric keys."""
-        return DetMetrics.keys.fget(self) + [
+        return [
+            *DetMetrics.keys.fget(self),
             "metrics/precision(P)",
             "metrics/recall(P)",
             "metrics/mAP50(P)",
             "metrics/mAP50-95(P)",
         ]
 
-    def mean_results(self) -> List[float]:
+    def mean_results(self) -> list[float]:
         """Return the mean results of box and pose."""
         return DetMetrics.mean_results(self) + self.pose.mean_results()
 
-    def class_result(self, i: int) -> List[float]:
+    def class_result(self, i: int) -> list[float]:
         """Return the class-wise detection results for a specific class i."""
         return DetMetrics.class_result(self, i) + self.pose.class_result(i)
 
@@ -1322,9 +1291,10 @@ class PoseMetrics(DetMetrics):
         return self.pose.fitness() + DetMetrics.fitness.fget(self)
 
     @property
-    def curves(self) -> List[str]:
+    def curves(self) -> list[str]:
         """Return a list of curves for accessing specific metrics curves."""
-        return DetMetrics.curves.fget(self) + [
+        return [
+            *DetMetrics.curves.fget(self),
             "Precision-Recall(B)",
             "F1-Confidence(B)",
             "Precision-Confidence(B)",
@@ -1336,21 +1306,21 @@ class PoseMetrics(DetMetrics):
         ]
 
     @property
-    def curves_results(self) -> List[List]:
+    def curves_results(self) -> list[list]:
         """Return dictionary of computed performance metrics and statistics."""
         return DetMetrics.curves_results.fget(self) + self.pose.curves_results
 
-    def summary(self, normalize: bool = True, decimals: int = 5) -> List[Dict[str, Union[str, float]]]:
-        """
-        Generate a summarized representation of per-class pose metrics as a list of dictionaries. Includes both box and
-        pose scalar metrics (mAP, mAP50, mAP75) alongside precision, recall, and F1-score for each class.
+    def summary(self, normalize: bool = True, decimals: int = 5) -> list[dict[str, str | float]]:
+        """Generate a summarized representation of per-class pose metrics as a list of dictionaries. Includes both box
+        and pose scalar metrics (mAP, mAP50, mAP75) alongside precision, recall, and F1-score for each class.
 
         Args:
-            normalize (bool): For Pose metrics, everything is normalized  by default [0-1].
+            normalize (bool): For Pose metrics, everything is normalized by default [0-1].
             decimals (int): Number of decimal places to round the metrics values to.
 
         Returns:
-            (List[Dict[str, Union[str, float]]]): A list of dictionaries, each representing one class with corresponding metric values.
+            (List[Dict[str, Union[str, float]]]): A list of dictionaries, each representing one class with corresponding
+                metric values.
 
         Examples:
             >>> results = model.val(data="coco8-pose.yaml")
@@ -1374,8 +1344,7 @@ class PoseMetrics(DetMetrics):
 
 
 class ClassifyMetrics(SimpleClass, DataExportMixin):
-    """
-    Class for computing classification metrics including top-1 and top-5 accuracy.
+    """Class for computing classification metrics including top-1 and top-5 accuracy.
 
     Attributes:
         top1 (float): The top-1 accuracy.
@@ -1392,8 +1361,7 @@ class ClassifyMetrics(SimpleClass, DataExportMixin):
         self.task = "classify"
 
     def process(self, targets: torch.Tensor, pred: torch.Tensor):
-        """
-        Process target classes and predicted classes to compute metrics.
+        """Process target classes and predicted classes to compute metrics.
 
         Args:
             targets (torch.Tensor): Target classes.
@@ -1410,31 +1378,30 @@ class ClassifyMetrics(SimpleClass, DataExportMixin):
         return (self.top1 + self.top5) / 2
 
     @property
-    def results_dict(self) -> Dict[str, float]:
+    def results_dict(self) -> dict[str, float]:
         """Return a dictionary with model's performance metrics and fitness score."""
-        return dict(zip(self.keys + ["fitness"], [self.top1, self.top5, self.fitness]))
+        return dict(zip([*self.keys, "fitness"], [self.top1, self.top5, self.fitness]))
 
     @property
-    def keys(self) -> List[str]:
+    def keys(self) -> list[str]:
         """Return a list of keys for the results_dict property."""
         return ["metrics/accuracy_top1", "metrics/accuracy_top5"]
 
     @property
-    def curves(self) -> List:
+    def curves(self) -> list:
         """Return a list of curves for accessing specific metrics curves."""
         return []
 
     @property
-    def curves_results(self) -> List:
+    def curves_results(self) -> list:
         """Return a list of curves for accessing specific metrics curves."""
         return []
 
-    def summary(self, normalize: bool = True, decimals: int = 5) -> List[Dict[str, float]]:
-        """
-        Generate a single-row summary of classification metrics (Top-1 and Top-5 accuracy).
+    def summary(self, normalize: bool = True, decimals: int = 5) -> list[dict[str, float]]:
+        """Generate a single-row summary of classification metrics (Top-1 and Top-5 accuracy).
 
         Args:
-            normalize (bool): For Classify metrics, everything is normalized  by default [0-1].
+            normalize (bool): For Classify metrics, everything is normalized by default [0-1].
             decimals (int): Number of decimal places to round the metrics values to.
 
         Returns:
@@ -1449,15 +1416,15 @@ class ClassifyMetrics(SimpleClass, DataExportMixin):
 
 
 class OBBMetrics(DetMetrics):
-    """
-    Metrics for evaluating oriented bounding box (OBB) detection.
+    """Metrics for evaluating oriented bounding box (OBB) detection.
 
     Attributes:
         names (Dict[int, str]): Dictionary of class names.
         box (Metric): An instance of the Metric class for storing detection results.
         speed (Dict[str, float]): A dictionary for storing execution times of different parts of the detection process.
         task (str): The task type, set to 'obb'.
-        stats (Dict[str, List]): A dictionary containing lists for true positives, confidence scores, predicted classes, target classes, and target images.
+        stats (Dict[str, List]): A dictionary containing lists for true positives, confidence scores, predicted classes,
+            target classes, and target images.
         nt_per_class: Number of targets per class.
         nt_per_image: Number of targets per image.
 
@@ -1465,9 +1432,8 @@ class OBBMetrics(DetMetrics):
         https://arxiv.org/pdf/2106.06072.pdf
     """
 
-    def __init__(self, names: Dict[int, str] = {}) -> None:
-        """
-        Initialize an OBBMetrics instance with directory, plotting, and class names.
+    def __init__(self, names: dict[int, str] = {}) -> None:
+        """Initialize an OBBMetrics instance with directory, plotting, and class names.
 
         Args:
             names (Dict[int, str], optional): Dictionary of class names.
