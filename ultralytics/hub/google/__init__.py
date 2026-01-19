@@ -1,4 +1,5 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 import concurrent.futures
 import statistics
@@ -9,11 +10,10 @@ import requests
 
 
 class GCPRegions:
-    """
-    A class for managing and analyzing Google Cloud Platform (GCP) regions.
+    """A class for managing and analyzing Google Cloud Platform (GCP) regions.
 
-    This class provides functionality to initialize, categorize, and analyze GCP regions based on their
-    geographical location, tier classification, and network latency.
+    This class provides functionality to initialize, categorize, and analyze GCP regions based on their geographical
+    location, tier classification, and network latency.
 
     Attributes:
         regions (Dict[str, Tuple[int, str, str]]): A dictionary of GCP regions with their tier, city, and country.
@@ -73,18 +73,17 @@ class GCPRegions:
             "us-west4": (2, "Las Vegas", "United States"),
         }
 
-    def tier1(self) -> List[str]:
+    def tier1(self) -> list[str]:
         """Return a list of GCP regions classified as tier 1 based on predefined criteria."""
         return [region for region, info in self.regions.items() if info[0] == 1]
 
-    def tier2(self) -> List[str]:
+    def tier2(self) -> list[str]:
         """Return a list of GCP regions classified as tier 2 based on predefined criteria."""
         return [region for region, info in self.regions.items() if info[0] == 2]
 
     @staticmethod
-    def _ping_region(region: str, attempts: int = 1) -> Tuple[str, float, float, float, float]:
-        """
-        Ping a specified GCP region and measure network latency statistics.
+    def _ping_region(region: str, attempts: int = 1) -> tuple[str, float, float, float, float]:
+        """Ping a specified GCP region and measure network latency statistics.
 
         Args:
             region (str): The GCP region identifier to ping (e.g., 'us-central1').
@@ -122,11 +121,10 @@ class GCPRegions:
         self,
         top: int = 1,
         verbose: bool = False,
-        tier: Optional[int] = None,
+        tier: int | None = None,
         attempts: int = 1,
-    ) -> List[Tuple[str, float, float, float, float]]:
-        """
-        Determine the GCP regions with the lowest latency based on ping tests.
+    ) -> list[tuple[str, float, float, float, float]]:
+        """Determine the GCP regions with the lowest latency based on ping tests.
 
         Args:
             top (int, optional): Number of top regions to return.
@@ -135,8 +133,8 @@ class GCPRegions:
             attempts (int, optional): Number of ping attempts per region.
 
         Returns:
-            (List[Tuple[str, float, float, float, float]]): List of tuples containing region information and
-                latency statistics. Each tuple contains (region, mean_latency, std_dev, min_latency, max_latency).
+            (List[Tuple[str, float, float, float, float]]): List of tuples containing region information and latency
+                statistics. Each tuple contains (region, mean_latency, std_dev, min_latency, max_latency).
 
         Examples:
             >>> regions = GCPRegions()

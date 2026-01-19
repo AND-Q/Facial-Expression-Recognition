@@ -1,8 +1,8 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 from copy import copy
 from pathlib import Path
-from typing import Dict, Optional, Union
 
 from ultralytics.models import yolo
 from ultralytics.nn.tasks import SegmentationModel
@@ -11,8 +11,7 @@ from ultralytics.utils.plotting import plot_results
 
 
 class SegmentationTrainer(yolo.detect.DetectionTrainer):
-    """
-    A class extending the DetectionTrainer class for training based on a segmentation model.
+    """A class extending the DetectionTrainer class for training based on a segmentation model.
 
     This trainer specializes in handling segmentation tasks, extending the detection trainer with segmentation-specific
     functionality including model initialization, validation, and visualization.
@@ -27,9 +26,8 @@ class SegmentationTrainer(yolo.detect.DetectionTrainer):
         >>> trainer.train()
     """
 
-    def __init__(self, cfg=DEFAULT_CFG, overrides: Optional[Dict] = None, _callbacks=None):
-        """
-        Initialize a SegmentationTrainer object.
+    def __init__(self, cfg=DEFAULT_CFG, overrides: dict | None = None, _callbacks=None):
+        """Initialize a SegmentationTrainer object.
 
         This initializes a trainer for segmentation tasks, extending the detection trainer with segmentation-specific
         functionality. It sets the task to 'segment' and prepares the trainer for training segmentation models.
@@ -50,11 +48,8 @@ class SegmentationTrainer(yolo.detect.DetectionTrainer):
         overrides["task"] = "segment"
         super().__init__(cfg, overrides, _callbacks)
 
-    def get_model(
-        self, cfg: Optional[Union[Dict, str]] = None, weights: Optional[Union[str, Path]] = None, verbose: bool = True
-    ):
-        """
-        Initialize and return a SegmentationModel with specified configuration and weights.
+    def get_model(self, cfg: dict | str | None = None, weights: str | Path | None = None, verbose: bool = True):
+        """Initialize and return a SegmentationModel with specified configuration and weights.
 
         Args:
             cfg (dict | str, optional): Model configuration. Can be a dictionary, a path to a YAML file, or None.

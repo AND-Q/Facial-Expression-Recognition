@@ -1,8 +1,9 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 from copy import copy
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 from ultralytics.models import yolo
 from ultralytics.nn.tasks import PoseModel
@@ -11,8 +12,7 @@ from ultralytics.utils.plotting import plot_results
 
 
 class PoseTrainer(yolo.detect.DetectionTrainer):
-    """
-    A class extending the DetectionTrainer class for training YOLO pose estimation models.
+    """A class extending the DetectionTrainer class for training YOLO pose estimation models.
 
     This trainer specializes in handling pose estimation tasks, managing model training, validation, and visualization
     of pose keypoints alongside bounding boxes.
@@ -38,9 +38,8 @@ class PoseTrainer(yolo.detect.DetectionTrainer):
         >>> trainer.train()
     """
 
-    def __init__(self, cfg=DEFAULT_CFG, overrides: Optional[Dict[str, Any]] = None, _callbacks=None):
-        """
-        Initialize a PoseTrainer object for training YOLO pose estimation models.
+    def __init__(self, cfg=DEFAULT_CFG, overrides: dict[str, Any] | None = None, _callbacks=None):
+        """Initialize a PoseTrainer object for training YOLO pose estimation models.
 
         This initializes a trainer specialized for pose estimation tasks, setting the task to 'pose' and
         handling specific configurations needed for keypoint detection models.
@@ -50,15 +49,15 @@ class PoseTrainer(yolo.detect.DetectionTrainer):
             overrides (dict, optional): Dictionary of parameter overrides for the default configuration.
             _callbacks (list, optional): List of callback functions to be executed during training.
 
-        Notes:
-            This trainer will automatically set the task to 'pose' regardless of what is provided in overrides.
-            A warning is issued when using Apple MPS device due to known bugs with pose models.
-
         Examples:
             >>> from ultralytics.models.yolo.pose import PoseTrainer
             >>> args = dict(model="yolo11n-pose.pt", data="coco8-pose.yaml", epochs=3)
             >>> trainer = PoseTrainer(overrides=args)
             >>> trainer.train()
+
+        Notes:
+            This trainer will automatically set the task to 'pose' regardless of what is provided in overrides.
+            A warning is issued when using Apple MPS device due to known bugs with pose models.
         """
         if overrides is None:
             overrides = {}
@@ -73,12 +72,11 @@ class PoseTrainer(yolo.detect.DetectionTrainer):
 
     def get_model(
         self,
-        cfg: Optional[Union[str, Path, Dict[str, Any]]] = None,
-        weights: Optional[Union[str, Path]] = None,
+        cfg: str | Path | dict[str, Any] | None = None,
+        weights: str | Path | None = None,
         verbose: bool = True,
     ) -> PoseModel:
-        """
-        Get pose estimation model with specified configuration and weights.
+        """Get pose estimation model with specified configuration and weights.
 
         Args:
             cfg (str | Path | dict, optional): Model configuration file path or dictionary.
@@ -112,9 +110,8 @@ class PoseTrainer(yolo.detect.DetectionTrainer):
         """Plot training/validation metrics."""
         plot_results(file=self.csv, pose=True, on_plot=self.on_plot)  # save results.png
 
-    def get_dataset(self) -> Dict[str, Any]:
-        """
-        Retrieve the dataset and ensure it contains the required `kpt_shape` key.
+    def get_dataset(self) -> dict[str, Any]:
+        """Retrieve the dataset and ensure it contains the required `kpt_shape` key.
 
         Returns:
             (dict): A dictionary containing the training/validation/test dataset and category names.
