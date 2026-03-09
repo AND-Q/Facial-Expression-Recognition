@@ -1,4 +1,5 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 import ast
 import json
@@ -6,7 +7,7 @@ import platform
 import zipfile
 from collections import OrderedDict, namedtuple
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import cv2
 import numpy as np
@@ -19,9 +20,8 @@ from ultralytics.utils.checks import check_requirements, check_suffix, check_ver
 from ultralytics.utils.downloads import attempt_download_asset, is_url
 
 
-def check_class_names(names: Union[List, Dict]) -> Dict[int, str]:
-    """
-    Check class names and convert to dict format if needed.
+def check_class_names(names: list | dict) -> dict[int, str]:
+    """Check class names and convert to dict format if needed.
 
     Args:
         names (list | dict): Class names as list or dict format.
@@ -49,9 +49,8 @@ def check_class_names(names: Union[List, Dict]) -> Dict[int, str]:
     return names
 
 
-def default_class_names(data: Optional[Union[str, Path]] = None) -> Dict[int, str]:
-    """
-    Apply default class names to an input YAML file or return numerical class names.
+def default_class_names(data: str | Path | None = None) -> dict[int, str]:
+    """Apply default class names to an input YAML file or return numerical class names.
 
     Args:
         data (str | Path, optional): Path to YAML file containing class names.
@@ -68,8 +67,7 @@ def default_class_names(data: Optional[Union[str, Path]] = None) -> Dict[int, st
 
 
 class AutoBackend(nn.Module):
-    """
-    Handle dynamic backend selection for running inference using Ultralytics YOLO models.
+    """Handle dynamic backend selection for running inference using Ultralytics YOLO models.
 
     The AutoBackend class is designed to provide an abstraction layer for various inference engines. It supports a wide
     range of formats, each with specific naming conventions as outlined below:
@@ -134,17 +132,16 @@ class AutoBackend(nn.Module):
     @torch.no_grad()
     def __init__(
         self,
-        weights: Union[str, List[str], torch.nn.Module] = "yolo11n.pt",
+        weights: str | list[str] | torch.nn.Module = "yolo11n.pt",
         device: torch.device = torch.device("cpu"),
         dnn: bool = False,
-        data: Optional[Union[str, Path]] = None,
+        data: str | Path | None = None,
         fp16: bool = False,
         batch: int = 1,
         fuse: bool = True,
         verbose: bool = True,
     ):
-        """
-        Initialize the AutoBackend for inference.
+        """Initialize the AutoBackend for inference.
 
         Args:
             weights (str | List[str] | torch.nn.Module): Path to the model weights file or a module instance.
@@ -332,11 +329,11 @@ class AutoBackend(nn.Module):
                 check_requirements("numpy==1.23.5")
 
             try:  # https://developer.nvidia.com/nvidia-tensorrt-download
-                import tensorrt as trt  # noqa
+                import tensorrt as trt
             except ImportError:
                 if LINUX:
                     check_requirements("tensorrt>7.0.0,!=10.1.0")
-                import tensorrt as trt  # noqa
+                import tensorrt as trt
             check_version(trt.__version__, ">=7.0.0", hard=True)
             check_version(trt.__version__, "!=10.1.0", msg="https://github.com/ultralytics/ultralytics/pull/14239")
             if device.type == "cpu":
@@ -484,7 +481,7 @@ class AutoBackend(nn.Module):
         elif paddle:
             LOGGER.info(f"Loading {w} for PaddlePaddle inference...")
             check_requirements("paddlepaddle-gpu" if cuda else "paddlepaddle>=3.0.0")
-            import paddle.inference as pdi  # noqa
+            import paddle.inference as pdi
 
             w = Path(w)
             model_file, params_file = None, None
@@ -609,11 +606,10 @@ class AutoBackend(nn.Module):
         im: torch.Tensor,
         augment: bool = False,
         visualize: bool = False,
-        embed: Optional[List] = None,
+        embed: list | None = None,
         **kwargs: Any,
-    ) -> Union[torch.Tensor, List[torch.Tensor]]:
-        """
-        Run inference on an AutoBackend model.
+    ) -> torch.Tensor | list[torch.Tensor]:
+        """Run inference on an AutoBackend model.
 
         Args:
             im (torch.Tensor): The image tensor to perform inference on.
@@ -625,7 +621,7 @@ class AutoBackend(nn.Module):
         Returns:
             (torch.Tensor | List[torch.Tensor]): The raw output tensor(s) from the model.
         """
-        b, ch, h, w = im.shape  # batch, channel, height, width
+        _b, _ch, h, w = im.shape  # batch, channel, height, width
         if self.fp16 and im.dtype != torch.float16:
             im = im.half()  # to FP16
         if self.nhwc:
@@ -686,7 +682,7 @@ class AutoBackend(nn.Module):
                     # Start async inference with userdata=i to specify the position in results list
                     async_queue.start_async(inputs={self.input_name: im[i : i + 1]}, userdata=i)  # keep image as BCHW
                 async_queue.wait_all()  # wait for all inference requests to complete
-                y = np.concatenate([list(r.values())[0] for r in results])
+                y = np.concatenate([next(iter(r.values())) for r in results])
 
             else:  # inference_mode = "LATENCY", optimized for fastest first result at batch-size 1
                 y = list(self.ov_compiled_model(im).values())
@@ -825,8 +821,7 @@ class AutoBackend(nn.Module):
             return self.from_numpy(y)
 
     def from_numpy(self, x: np.ndarray) -> torch.Tensor:
-        """
-        Convert a numpy array to a tensor.
+        """Convert a numpy array to a tensor.
 
         Args:
             x (np.ndarray): The array to be converted.
@@ -836,9 +831,8 @@ class AutoBackend(nn.Module):
         """
         return torch.tensor(x).to(self.device) if isinstance(x, np.ndarray) else x
 
-    def warmup(self, imgsz: Tuple[int, int, int, int] = (1, 3, 640, 640)) -> None:
-        """
-        Warm up the model by running one forward pass with a dummy input.
+    def warmup(self, imgsz: tuple[int, int, int, int] = (1, 3, 640, 640)) -> None:
+        """Warm up the model by running one forward pass with a dummy input.
 
         Args:
             imgsz (tuple): The shape of the dummy input tensor in the format (batch_size, channels, height, width)
@@ -852,9 +846,8 @@ class AutoBackend(nn.Module):
                 self.forward(im)  # warmup
 
     @staticmethod
-    def _model_type(p: str = "path/to/model.pt") -> List[bool]:
-        """
-        Take a path to a model file and return the model type.
+    def _model_type(p: str = "path/to/model.pt") -> list[bool]:
+        """Take a path to a model file and return the model type.
 
         Args:
             p (str): Path to the model file.
@@ -883,4 +876,4 @@ class AutoBackend(nn.Module):
             url = urlsplit(p)
             triton = bool(url.netloc) and bool(url.path) and url.scheme in {"http", "grpc"}
 
-        return types + [triton]
+        return [*types, triton]

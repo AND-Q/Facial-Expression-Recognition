@@ -1,6 +1,7 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 import torch
 
@@ -13,8 +14,7 @@ __all__ = ("RTDETRValidator",)  # tuple or list
 
 
 class RTDETRDataset(YOLODataset):
-    """
-    Real-Time DEtection and TRacking (RT-DETR) dataset class extending the base YOLODataset class.
+    """Real-Time DEtection and TRacking (RT-DETR) dataset class extending the base YOLODataset class.
 
     This specialized dataset class is designed for use with the RT-DETR object detection model and is optimized for
     real-time detection and tracking tasks.
@@ -37,8 +37,7 @@ class RTDETRDataset(YOLODataset):
     """
 
     def __init__(self, *args, data=None, **kwargs):
-        """
-        Initialize the RTDETRDataset class by inheriting from the YOLODataset class.
+        """Initialize the RTDETRDataset class by inheriting from the YOLODataset class.
 
         This constructor sets up a dataset specifically optimized for the RT-DETR (Real-Time DEtection and TRacking)
         model, building upon the base YOLODataset functionality.
@@ -51,8 +50,7 @@ class RTDETRDataset(YOLODataset):
         super().__init__(*args, data=data, **kwargs)
 
     def load_image(self, i, rect_mode=False):
-        """
-        Load one image from dataset index 'i'.
+        """Load one image from dataset index 'i'.
 
         Args:
             i (int): Index of the image to load.
@@ -70,8 +68,7 @@ class RTDETRDataset(YOLODataset):
         return super().load_image(i=i, rect_mode=rect_mode)
 
     def build_transforms(self, hyp=None):
-        """
-        Build transformation pipeline for the dataset.
+        """Build transformation pipeline for the dataset.
 
         Args:
             hyp (dict, optional): Hyperparameters for transformations.
@@ -102,8 +99,7 @@ class RTDETRDataset(YOLODataset):
 
 
 class RTDETRValidator(DetectionValidator):
-    """
-    RTDETRValidator extends the DetectionValidator class to provide validation capabilities specifically tailored for
+    """RTDETRValidator extends the DetectionValidator class to provide validation capabilities specifically tailored for
     the RT-DETR (Real-Time DETR) object detection model.
 
     The class allows building of an RTDETR-specific dataset for validation, applies Non-maximum suppression for
@@ -129,8 +125,7 @@ class RTDETRValidator(DetectionValidator):
     """
 
     def build_dataset(self, img_path, mode="val", batch=None):
-        """
-        Build an RTDETR Dataset.
+        """Build an RTDETR Dataset.
 
         Args:
             img_path (str): Path to the folder containing images.
@@ -154,14 +149,14 @@ class RTDETRValidator(DetectionValidator):
         )
 
     def postprocess(
-        self, preds: Union[torch.Tensor, List[torch.Tensor], Tuple[torch.Tensor]]
-    ) -> List[Dict[str, torch.Tensor]]:
-        """
-        Apply Non-maximum suppression to prediction outputs.
+        self, preds: torch.Tensor | list[torch.Tensor] | tuple[torch.Tensor]
+    ) -> list[dict[str, torch.Tensor]]:
+        """Apply Non-maximum suppression to prediction outputs.
 
         Args:
             preds (torch.Tensor | List | Tuple): Raw predictions from the model. If tensor, should have shape
-                (batch_size, num_predictions, num_classes + 4) where last dimension contains bbox coords and class scores.
+                (batch_size, num_predictions, num_classes + 4) where last dimension contains bbox coords and
+                class scores.
 
         Returns:
             (List[Dict[str, torch.Tensor]]): List of dictionaries for each image, each containing:
@@ -186,17 +181,16 @@ class RTDETRValidator(DetectionValidator):
 
         return [{"bboxes": x[:, :4], "conf": x[:, 4], "cls": x[:, 5]} for x in outputs]
 
-    def _prepare_batch(self, si: int, batch: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Prepare a batch for validation by applying necessary transformations.
+    def _prepare_batch(self, si: int, batch: dict[str, Any]) -> dict[str, Any]:
+        """Prepare a batch for validation by applying necessary transformations.
 
         Args:
             si (int): Batch index.
             batch (Dict[str, Any]): Batch data containing images and annotations.
 
         Returns:
-            (Dict[str, Any]): Prepared batch with transformed annotations containing cls, bboxes,
-                ori_shape, imgsz, and ratio_pad.
+            (Dict[str, Any]): Prepared batch with transformed annotations containing cls, bboxes, ori_shape, imgsz, and
+                ratio_pad.
         """
         idx = batch["batch_idx"] == si
         cls = batch["cls"][idx].squeeze(-1)
@@ -210,9 +204,8 @@ class RTDETRValidator(DetectionValidator):
             bbox[..., [1, 3]] *= ori_shape[0]  # native-space pred
         return {"cls": cls, "bboxes": bbox, "ori_shape": ori_shape, "imgsz": imgsz, "ratio_pad": ratio_pad}
 
-    def _prepare_pred(self, pred: Dict[str, torch.Tensor], pbatch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
-        """
-        Prepare predictions by scaling bounding boxes to original image dimensions.
+    def _prepare_pred(self, pred: dict[str, torch.Tensor], pbatch: dict[str, Any]) -> dict[str, torch.Tensor]:
+        """Prepare predictions by scaling bounding boxes to original image dimensions.
 
         Args:
             pred (Dict[str, torch.Tensor]): Raw predictions containing 'cls', 'bboxes', and 'conf'.

@@ -1,13 +1,13 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Optional, Union
 
 from ultralytics import SAM, YOLO
 
 
 def auto_annotate(
-    data: Union[str, Path],
+    data: str | Path,
     det_model: str = "yolo11x.pt",
     sam_model: str = "sam_b.pt",
     device: str = "",
@@ -15,11 +15,10 @@ def auto_annotate(
     iou: float = 0.45,
     imgsz: int = 640,
     max_det: int = 300,
-    classes: Optional[List[int]] = None,
-    output_dir: Optional[Union[str, Path]] = None,
+    classes: list[int] | None = None,
+    output_dir: str | Path | None = None,
 ) -> None:
-    """
-    Automatically annotate images using a YOLO object detection model and a SAM segmentation model.
+    """Automatically annotate images using a YOLO object detection model and a SAM segmentation model.
 
     This function processes images in a specified directory, detects objects using a YOLO model, and then generates
     segmentation masks using a SAM model. The resulting annotations are saved as text files in YOLO format.
@@ -34,8 +33,8 @@ def auto_annotate(
         imgsz (int): Input image resize dimension.
         max_det (int): Maximum number of detections per image.
         classes (List[int], optional): Filter predictions to specified class IDs, returning only relevant detections.
-        output_dir (str | Path, optional): Directory to save the annotated results. If None, creates a default
-            directory based on the input data path.
+        output_dir (str | Path, optional): Directory to save the annotated results. If None, creates a default directory
+            based on the input data path.
 
     Examples:
         >>> from ultralytics.data.annotator import auto_annotate

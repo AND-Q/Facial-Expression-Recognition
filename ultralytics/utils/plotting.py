@@ -1,9 +1,10 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+from __future__ import annotations
 
 import math
 import warnings
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable
 
 import cv2
 import numpy as np
@@ -17,11 +18,10 @@ from ultralytics.utils.files import increment_path
 
 
 class Colors:
-    """
-    Ultralytics color palette for visualization and plotting.
+    """Ultralytics color palette for visualization and plotting.
 
-    This class provides methods to work with the Ultralytics color palette, including converting hex color codes to
-    RGB values and accessing predefined color schemes for object detection and pose estimation.
+    This class provides methods to work with the Ultralytics color palette, including converting hex color codes to RGB
+    values and accessing predefined color schemes for object detection and pose estimation.
 
     Attributes:
         palette (List[tuple]): List of RGB color tuples for general use.
@@ -143,8 +143,7 @@ class Colors:
         )
 
     def __call__(self, i: int, bgr: bool = False) -> tuple:
-        """
-        Convert hex color codes to RGB values.
+        """Convert hex color codes to RGB values.
 
         Args:
             i (int): Color index.
@@ -166,8 +165,7 @@ colors = Colors()  # create instance for 'from utils.plots import colors'
 
 
 class Annotator:
-    """
-    Ultralytics Annotator for train/val mosaics and JPGs and predictions annotations.
+    """Ultralytics Annotator for train/val mosaics and JPGs and predictions annotations.
 
     Attributes:
         im (Image.Image | np.ndarray): The image to annotate.
@@ -190,8 +188,8 @@ class Annotator:
     def __init__(
         self,
         im,
-        line_width: Optional[int] = None,
-        font_size: Optional[int] = None,
+        line_width: int | None = None,
+        font_size: int | None = None,
         font: str = "Arial.ttf",
         pil: bool = False,
         example: str = "abc",
@@ -276,8 +274,7 @@ class Annotator:
         }
 
     def get_txt_color(self, color: tuple = (128, 128, 128), txt_color: tuple = (255, 255, 255)) -> tuple:
-        """
-        Assign text color based on background color.
+        """Assign text color based on background color.
 
         Args:
             color (tuple, optional): The background color of the rectangle for text (B, G, R).
@@ -300,8 +297,7 @@ class Annotator:
             return txt_color
 
     def box_label(self, box, label: str = "", color: tuple = (128, 128, 128), txt_color: tuple = (255, 255, 255)):
-        """
-        Draw a bounding box on an image with a given label.
+        """Draw a bounding box on an image with a given label.
 
         Args:
             box (tuple): The bounding box coordinates (x1, y1, x2, y2).
@@ -362,8 +358,7 @@ class Annotator:
                 )
 
     def masks(self, masks, colors, im_gpu, alpha: float = 0.5, retina_masks: bool = False):
-        """
-        Plot masks on image.
+        """Plot masks on image.
 
         Args:
             masks (torch.Tensor): Predicted masks on cuda, shape: [n, h, w]
@@ -401,13 +396,12 @@ class Annotator:
         self,
         kpts,
         shape: tuple = (640, 640),
-        radius: Optional[int] = None,
+        radius: int | None = None,
         kpt_line: bool = True,
         conf_thres: float = 0.25,
-        kpt_color: Optional[tuple] = None,
+        kpt_color: tuple | None = None,
     ):
-        """
-        Plot keypoints on the image.
+        """Plot keypoints on the image.
 
         Args:
             kpts (torch.Tensor): Keypoints, shape [17, 3] (x, y, confidence).
@@ -417,7 +411,7 @@ class Annotator:
             conf_thres (float, optional): Confidence threshold.
             kpt_color (tuple, optional): Keypoint color (B, G, R).
 
-        Note:
+        Notes:
             - `kpt_line=True` currently only supports human pose plotting.
             - Modifies self.im in-place.
             - If self.pil is True, converts image to numpy array and back to PIL.
@@ -470,8 +464,7 @@ class Annotator:
         self.draw.rectangle(xy, fill, outline, width)
 
     def text(self, xy, text: str, txt_color: tuple = (255, 255, 255), anchor: str = "top", box_color: tuple = ()):
-        """
-        Add text to an image using PIL or cv2.
+        """Add text to an image using PIL or cv2.
 
         Args:
             xy (List[int]): Top-left coordinates for text placement.
@@ -509,7 +502,7 @@ class Annotator:
         """Return annotated image as array."""
         return np.asarray(self.im)
 
-    def show(self, title: Optional[str] = None):
+    def show(self, title: str | None = None):
         """Show the annotated image."""
         im = Image.fromarray(np.asarray(self.im)[..., ::-1])  # Convert numpy array to PIL Image with RGB to BGR
         if IS_COLAB or IS_KAGGLE:  # can not use IS_JUPYTER as will run for all ipython environments
@@ -525,9 +518,8 @@ class Annotator:
         cv2.imwrite(filename, np.asarray(self.im))
 
     @staticmethod
-    def get_bbox_dimension(bbox: Optional[tuple] = None):
-        """
-        Calculate the dimensions and area of a bounding box.
+    def get_bbox_dimension(bbox: tuple | None = None):
+        """Calculate the dimensions and area of a bounding box.
 
         Args:
             bbox (tuple): Bounding box coordinates in the format (x_min, y_min, x_max, y_max).
@@ -552,8 +544,7 @@ class Annotator:
 @TryExcept()  # known issue https://github.com/ultralytics/yolov5/issues/5395
 @plt_settings()
 def plot_labels(boxes, cls, names=(), save_dir=Path(""), on_plot=None):
-    """
-    Plot training labels including class histograms and box statistics.
+    """Plot training labels including class histograms and box statistics.
 
     Args:
         boxes (np.ndarray): Bounding box coordinates in format [x, y, width, height].
@@ -631,12 +622,11 @@ def save_one_box(
     BGR: bool = False,
     save: bool = True,
 ):
-    """
-    Save image crop as {file} with crop size multiple {gain} and {pad} pixels. Save and/or return crop.
+    """Save image crop as {file} with crop size multiple {gain} and {pad} pixels. Save and/or return crop.
 
-    This function takes a bounding box and an image, and then saves a cropped portion of the image according
-    to the bounding box. Optionally, the crop can be squared, and the function allows for gain and padding
-    adjustments to the bounding box.
+    This function takes a bounding box and an image, and then saves a cropped portion of the image according to the
+    bounding box. Optionally, the crop can be squared, and the function allows for gain and padding adjustments to the
+    bounding box.
 
     Args:
         xyxy (torch.Tensor | list): A tensor or list representing the bounding box in xyxy format.
@@ -678,22 +668,22 @@ def save_one_box(
 
 @threaded
 def plot_images(
-    labels: Dict[str, Any],
-    images: Union[torch.Tensor, np.ndarray] = np.zeros((0, 3, 640, 640), dtype=np.float32),
-    paths: Optional[List[str]] = None,
+    labels: dict[str, Any],
+    images: torch.Tensor | np.ndarray = np.zeros((0, 3, 640, 640), dtype=np.float32),
+    paths: list[str] | None = None,
     fname: str = "images.jpg",
-    names: Optional[Dict[int, str]] = None,
-    on_plot: Optional[Callable] = None,
+    names: dict[int, str] | None = None,
+    on_plot: Callable | None = None,
     max_size: int = 1920,
     max_subplots: int = 16,
     save: bool = True,
     conf_thres: float = 0.25,
-) -> Optional[np.ndarray]:
-    """
-    Plot image grid with labels, bounding boxes, masks, and keypoints.
+) -> np.ndarray | None:
+    """Plot image grid with labels, bounding boxes, masks, and keypoints.
 
     Args:
-        labels (Dict[str, Any]): Dictionary containing detection data with keys like 'cls', 'bboxes', 'conf', 'masks', 'keypoints', 'batch_idx', 'img'.
+        labels (Dict[str, Any]): Dictionary containing detection data with keys like 'cls', 'bboxes', 'conf', 'masks',
+            'keypoints', 'batch_idx', 'img'.
         images (Union[torch.Tensor, np.ndarray]): Batch of images to plot. Shape: (batch_size, channels, height, width).
         paths (Optional[List[str]]): List of file paths for each image in the batch.
         fname (str): Output filename for the plotted image grid.
@@ -707,7 +697,7 @@ def plot_images(
     Returns:
         (np.ndarray): Plotted image grid as a numpy array if save is False, None otherwise.
 
-    Note:
+    Notes:
         This function supports both tensor and numpy array inputs. It will automatically
         convert tensor inputs to numpy arrays for processing.
     """
@@ -851,11 +841,11 @@ def plot_results(
     segment: bool = False,
     pose: bool = False,
     classify: bool = False,
-    on_plot: Optional[Callable] = None,
+    on_plot: Callable | None = None,
 ):
-    """
-    Plot training results from a results CSV file. The function supports various types of data including segmentation,
-    pose estimation, and classification. Plots are saved as 'results.png' in the directory where the CSV is located.
+    """Plot training results from a results CSV file. The function supports various types of data including
+    segmentation, pose estimation, and classification. Plots are saved as 'results.png' in the directory where the
+    CSV is located.
 
     Args:
         file (str, optional): Path to the CSV file containing the training results.
@@ -913,8 +903,7 @@ def plot_results(
 
 
 def plt_color_scatter(v, f, bins: int = 20, cmap: str = "viridis", alpha: float = 0.8, edgecolors: str = "none"):
-    """
-    Plot a scatter plot with points colored based on a 2D histogram.
+    """Plot a scatter plot with points colored based on a 2D histogram.
 
     Args:
         v (array-like): Values for the x-axis.
@@ -946,9 +935,9 @@ def plt_color_scatter(v, f, bins: int = 20, cmap: str = "viridis", alpha: float 
 
 
 def plot_tune_results(csv_file: str = "tune_results.csv"):
-    """
-    Plot the evolution results stored in a 'tune_results.csv' file. The function generates a scatter plot for each key
-    in the CSV, color-coded based on fitness scores. The best-performing configurations are highlighted on the plots.
+    """Plot the evolution results stored in a 'tune_results.csv' file. The function generates a scatter plot for each
+    key in the CSV, color-coded based on fitness scores. The best-performing configurations are highlighted on
+    the plots.
 
     Args:
         csv_file (str, optional): Path to the CSV file containing the tuning results.
@@ -1002,8 +991,7 @@ def plot_tune_results(csv_file: str = "tune_results.csv"):
 
 
 def feature_visualization(x, module_type: str, stage: int, n: int = 32, save_dir: Path = Path("runs/detect/exp")):
-    """
-    Visualize feature maps of a given model module during inference.
+    """Visualize feature maps of a given model module during inference.
 
     Args:
         x (torch.Tensor): Features to be visualized.
