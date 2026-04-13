@@ -54,11 +54,11 @@ In this step, you have to choose the project in which you want to create your mo
 
 ??? note
 
-    Ultralytics HUB will try to pre-select the project.
+    Ultralytics HUB will try to preselect the project.
 
-    If you opened the **Train Model** dialog as described above, [Ultralytics HUB](https://www.ultralytics.com/hub) will pre-select the last project you used.
+    If you opened the **Train Model** dialog as described above, [Ultralytics HUB](https://www.ultralytics.com/hub) will preselect the last project you used.
 
-    If you opened the **Train Model** dialog from the Project page, [Ultralytics HUB](https://www.ultralytics.com/hub) will pre-select the project you were inside of.
+    If you opened the **Train Model** dialog from the Project page, [Ultralytics HUB](https://www.ultralytics.com/hub) will preselect the project you were inside of.
 
     ![Ultralytics HUB screenshot of the Project page with an arrow pointing to the Train Model button](https://github.com/ultralytics/docs/releases/download/0/hub-train-model-button.avif)
 
