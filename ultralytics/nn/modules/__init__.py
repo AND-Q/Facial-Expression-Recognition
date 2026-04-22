@@ -14,7 +14,7 @@ Examples:
     >>> m = Conv(128, 128)
     >>> f = f"{m._get_name()}.onnx"
     >>> torch.onnx.export(m, x, f)
-    >>> os.system(f"onnxslim {f} {f} && open {f}")  # pip install onnxslim
+    >>> os.system(f"onnxslim {shlex.quote(f)} {f} && open {f}")  # pip install onnxslim
 """
 
 from .block import (
