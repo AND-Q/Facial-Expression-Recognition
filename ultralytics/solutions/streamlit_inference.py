@@ -1,7 +1,7 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 
 import io
-from typing import Any, List
+from typing import Any
 
 import cv2
 
@@ -12,8 +12,7 @@ from ultralytics.utils.downloads import GITHUB_ASSETS_STEMS
 
 
 class Inference:
-    """
-    A class to perform object detection, image classification, image segmentation and pose estimation inference.
+    """A class to perform object detection, image classification, image segmentation and pose estimation inference.
 
     This class provides functionalities for loading models, configuring settings, uploading video files, and performing
     real-time inference using Streamlit and Ultralytics YOLO models.
@@ -50,8 +49,7 @@ class Inference:
     """
 
     def __init__(self, **kwargs: Any) -> None:
-        """
-        Initialize the Inference class, checking Streamlit requirements and setting up the model path.
+        """Initialize the Inference class, checking Streamlit requirements and setting up the model path.
 
         Args:
             **kwargs (Any): Additional keyword arguments for model configuration.
@@ -67,7 +65,7 @@ class Inference:
         self.org_frame = None  # Container for the original frame display
         self.ann_frame = None  # Container for the annotated frame display
         self.vid_file_name = None  # Video file name or webcam index
-        self.selected_ind: List[int] = []  # List of selected class indices for detection
+        self.selected_ind: list[int] = []  # List of selected class indices for detection
         self.model = None  # YOLO model instance
 
         self.temp_dict = {"model": None, **kwargs}
