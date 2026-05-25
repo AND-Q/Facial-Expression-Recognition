@@ -85,7 +85,7 @@ dev = [
     "pytest",
     "pytest-cov",
     "coverage[toml]",
-    "mkdocs>=1.6.0",
+    "mkdocs>=1.6.1",
     "mkdocs-material>=9.5.9",
     "mkdocstrings[python]",
     "mkdocs-ultralytics-plugin>=0.1.19", # for meta descriptions and images, dates and authors
