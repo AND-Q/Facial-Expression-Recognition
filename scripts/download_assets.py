@@ -1,6 +1,9 @@
 import argparse
 import os
+import shutil
+import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -22,9 +25,74 @@ DATASET_ASSETS = {
     "datasets/fer2013plus.zip": "fer2013plus.zip",
 }
 
+CHUNK_SIZE = 1024 * 1024
+URLLIB_RETRIES = 3
+CURL_MAX_TIME_SECONDS = 900
+CURL_MIN_SPEED_BYTES = 1024
+CURL_MIN_SPEED_SECONDS = 60
+
 
 def release_url(repo, tag, asset_name):
     return f"https://github.com/{repo}/releases/download/{tag}/{asset_name}"
+
+
+def format_not_found_message(url):
+    return (
+        f"Release 资产不存在: {url}\n"
+        f"请先在 GitHub Releases 的 {DEFAULT_TAG} 中上传对应文件，或用 --tag 指定实际版本。"
+    )
+
+
+def download_with_urllib(url, tmp_path):
+    with urllib.request.urlopen(url, timeout=60) as response, tmp_path.open("wb") as file:
+        total = int(response.headers.get("Content-Length") or 0)
+        downloaded = 0
+        while True:
+            chunk = response.read(CHUNK_SIZE)
+            if not chunk:
+                break
+            file.write(chunk)
+            downloaded += len(chunk)
+            if total:
+                percent = downloaded / total * 100
+                print(f"\r进度: {percent:5.1f}%", end="", flush=True)
+    if total:
+        print()
+
+
+def download_with_curl(url, tmp_path):
+    curl = shutil.which("curl")
+    if not curl:
+        return False
+
+    print("Python 下载失败，改用 curl 重试。")
+    result = subprocess.run(
+        [
+            curl,
+            "--fail",
+            "--location",
+            "--retry",
+            "5",
+            "--retry-all-errors",
+            "--retry-delay",
+            "3",
+            "--connect-timeout",
+            "30",
+            "--max-time",
+            str(CURL_MAX_TIME_SECONDS),
+            "--speed-limit",
+            str(CURL_MIN_SPEED_BYTES),
+            "--speed-time",
+            str(CURL_MIN_SPEED_SECONDS),
+            "--output",
+            str(tmp_path),
+            url,
+        ],
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"curl 下载失败，退出码: {result.returncode}")
+    return True
 
 
 def download_file(url, destination, overwrite=False):
@@ -39,33 +107,34 @@ def download_file(url, destination, overwrite=False):
     print(f"下载: {url}")
     print(f"保存: {destination}")
 
+    last_error = None
+    for attempt in range(1, URLLIB_RETRIES + 1):
+        try:
+            download_with_urllib(url, tmp_path)
+            tmp_path.replace(destination)
+            return
+        except urllib.error.HTTPError as exc:
+            tmp_path.unlink(missing_ok=True)
+            if exc.code == 404:
+                raise RuntimeError(format_not_found_message(url)) from exc
+            last_error = exc
+        except Exception as exc:
+            tmp_path.unlink(missing_ok=True)
+            last_error = exc
+
+        if attempt < URLLIB_RETRIES:
+            print(f"下载中断，准备重试 ({attempt}/{URLLIB_RETRIES})...")
+            time.sleep(2 * attempt)
+
     try:
-        with urllib.request.urlopen(url) as response, tmp_path.open("wb") as file:
-            total = int(response.headers.get("Content-Length") or 0)
-            downloaded = 0
-            while True:
-                chunk = response.read(1024 * 1024)
-                if not chunk:
-                    break
-                file.write(chunk)
-                downloaded += len(chunk)
-                if total:
-                    percent = downloaded / total * 100
-                    print(f"\r进度: {percent:5.1f}%", end="", flush=True)
-        if total:
-            print()
-        tmp_path.replace(destination)
-    except urllib.error.HTTPError as exc:
+        if download_with_curl(url, tmp_path):
+            tmp_path.replace(destination)
+            return
+    except Exception as exc:
         tmp_path.unlink(missing_ok=True)
-        if exc.code == 404:
-            raise RuntimeError(
-                f"Release 资产不存在: {url}\n"
-                f"请先在 GitHub Releases 的 {DEFAULT_TAG} 中上传对应文件，或用 --tag 指定实际版本。"
-            ) from exc
-        raise
-    except Exception:
-        tmp_path.unlink(missing_ok=True)
-        raise
+        raise RuntimeError(f"下载失败: {last_error}; curl 备用下载也失败: {exc}") from exc
+
+    raise RuntimeError(f"下载失败: {last_error}")
 
 
 def selected_assets(args):
