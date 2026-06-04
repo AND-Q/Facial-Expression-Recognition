@@ -145,6 +145,13 @@ dmypy.json
 runs/
 wandb/
 .DS_Store
+release-assets/
+
+# Local media samples and outputs
+*.mp4
+*.avi
+*.mov
+*.mkv
 
 # Neural Network weights -----------------------------------------------------------------------------------------------
 weights/

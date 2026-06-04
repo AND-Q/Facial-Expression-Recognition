@@ -263,13 +263,63 @@
    - Pillow
    - NumPy
 
-   可以使用以下命令安装依赖：
+   推荐使用 Conda 创建独立环境并安装依赖：
 
    ```bash
-   pip install ultralytics opencv-python PyQt5 pillow numpy torch torchvision
+   conda env create -f environment.yml
+   conda activate fer
    ```
 
-   ### 2. 运行系统
+   如果已经有可用的 Python 环境，也可以直接安装本项目依赖：
+
+   ```bash
+   pip install -e ".[fer]"
+   ```
+
+   ### 2. 下载模型
+
+   为了保持代码仓库轻量，模型权重和数据集压缩包不直接放在 Git 仓库中。首次运行前请先从 GitHub Release 下载模型：
+
+   ```bash
+   python scripts/download_assets.py --models
+   ```
+
+   如果需要训练数据集压缩包，可以按需下载：
+
+   ```bash
+   python scripts/download_assets.py --datasets
+   ```
+
+   默认下载地址是本仓库 `v1.0.0` Release。维护者需要在 Release 中上传以下模型资产：
+
+   | Release 文件名 | 下载后路径 | 用途 |
+   | --- | --- | --- |
+   | `yolov11n-face.pt` | `yolov11n-face.pt` | 人脸检测 |
+   | `datasets_plus_best.pt` | `runs/classify/datasets_plus_optimized/weights/best.pt` | 综合数据集表情识别 |
+   | `fer2013_plus_best.pt` | `runs/classify/fer2013_plus_optimized/weights/best.pt` | FER2013 增强模型 |
+   | `affectnet_best.pt` | `runs/classify/affectnet_optimized/weights/best.pt` | AffectNet 模型 |
+   | `my_datasets_best.pt` | `runs/classify/my_datasets_optimized/weights/best.pt` | 自定义数据集模型 |
+
+   可选数据集资产：
+
+   | Release 文件名 | 下载后路径 |
+   | --- | --- |
+   | `affectnet.zip` | `datasets/affectnet.zip` |
+   | `fer2013plus.zip` | `datasets/fer2013plus.zip` |
+
+   如果使用其他 Release 标签：
+
+   ```bash
+   python scripts/download_assets.py --models --tag v1.0.1
+   ```
+
+   仓库维护建议：
+   - Git 仓库只保留代码、配置、轻量示例图片和文档
+   - 最终推理模型放到 GitHub Releases
+   - 数据集压缩包放到 Releases、Kaggle、Hugging Face Datasets 或网盘
+   - `runs/`、`*.pt`、`*.zip`、视频文件和训练中间 checkpoint 不提交到 Git
+
+   ### 3. 运行系统
 
    启动图形界面：
 
@@ -291,7 +341,7 @@
    python yolo_face_detection.py --camera          # 摄像头模式
    ```
 
-   ### 3. 界面操作
+   ### 4. 界面操作
 
    1. 选择输入源（摄像头、图像文件或视频文件）
    2. 选择表情识别模型

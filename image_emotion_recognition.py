@@ -4,9 +4,14 @@ import argparse
 from ultralytics import YOLO
 import os
 from PIL import Image, ImageDraw, ImageFont
+from yolo_face_detection import get_emotion_label
 
 
-def recognize_emotion(image_path):
+DEFAULT_MODEL_PATH = 'runs/classify/fer2013_plus_optimized/weights/best.pt'
+DOWNLOAD_HINT = "请先运行: python scripts/download_assets.py --models"
+
+
+def recognize_emotion(image_path, model_path=DEFAULT_MODEL_PATH):
     """
     识别图片中的人脸表情
 
@@ -14,11 +19,11 @@ def recognize_emotion(image_path):
         image_path: 图片路径
     """
     # 加载训练好的模型
-    model_path = 'runs/classify/train/weights/best.pt'
+    if not os.path.exists(model_path):
+        print(f"模型文件不存在: {model_path}")
+        print(DOWNLOAD_HINT)
+        return
     model = YOLO(model_path)
-
-    # 表情标签（根据fer2013plus数据集）
-    emotion_labels = ['生气', '厌恶', '恐惧', '高兴', '悲伤', '惊讶', '中性']
 
     # 加载人脸检测器
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -111,7 +116,7 @@ def recognize_emotion(image_path):
             confidence = max(probs)
 
             # 获取表情标签
-            emotion = emotion_labels[class_id]
+            emotion = get_emotion_label(model, class_id)
 
             # 在图像上显示预测结果
             text = f"人脸 {i + 1}: {emotion} ({confidence:.2f})"
@@ -140,6 +145,7 @@ def recognize_emotion(image_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="图片人脸表情识别")
     parser.add_argument("image_path", help="图片路径")
+    parser.add_argument("--model", default=DEFAULT_MODEL_PATH, help="表情识别模型路径")
     args = parser.parse_args()
 
-    recognize_emotion(args.image_path)
+    recognize_emotion(args.image_path, args.model)

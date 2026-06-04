@@ -5,15 +5,14 @@ import os
 import cv2
 import numpy as np
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QHBoxLayout,
-                             QWidget, QFileDialog, QComboBox, QSlider, QStyle, QStyleFactory,
-                             QFrame, QSplitter, QGroupBox, QGridLayout, QMessageBox, QProgressBar)
-from PyQt5.QtGui import QPixmap, QImage, QFont, QPalette, QColor, QIcon
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread, QSize
-import qdarkstyle
+                             QWidget, QFileDialog, QComboBox, QSlider, QStyleFactory,
+                             QFrame, QGroupBox, QMessageBox, QProgressBar)
+from PyQt5.QtGui import QPixmap, QImage, QFont
+from PyQt5.QtCore import Qt, pyqtSignal, QThread
 from ultralytics import YOLO
 
 # 导入原有的人脸检测函数
-from yolo_face_detection import download_face_model, load_font, cv2_add_chinese_text
+from yolo_face_detection import download_face_model, load_font, cv2_add_chinese_text, get_emotion_label
 
 
 class VideoThread(QThread):
@@ -40,9 +39,6 @@ class VideoThread(QThread):
     def run(self):
         # 加载字体
         font = load_font()
-
-        # 表情标签
-        emotion_labels = ['愤怒', '厌恶', '高兴', '中性', '悲伤', '惊讶']
 
         # 初始化视频源
         if self.mode == 'camera':
@@ -108,7 +104,7 @@ class VideoThread(QThread):
                                     confidence = max(probs)
 
                                     # 获取表情标签
-                                    emotion = emotion_labels[class_id]
+                                    emotion = get_emotion_label(self.emotion_model, class_id)
 
                                     # 在图像上显示预测结果
                                     text = f"{emotion}: {confidence:.2f}"
@@ -190,7 +186,7 @@ class VideoThread(QThread):
                                 confidence = max(probs)
 
                                 # 获取表情标签
-                                emotion = emotion_labels[class_id]
+                                emotion = get_emotion_label(self.emotion_model, class_id)
 
                                 # 在图像上显示预测结果
                                 text = f"{emotion}: {confidence:.2f}"
@@ -247,6 +243,8 @@ class FaceDetectionApp(QMainWindow):
 
         # 初始化视频线程
         self.video_thread = None
+        self.selected_file = None
+        self.current_image = None
 
     def init_ui(self):
         # 设置中央窗口部件
@@ -710,6 +708,8 @@ class FaceDetectionApp(QMainWindow):
             if not self.emotion_model:
                 QMessageBox.warning(self, "警告", "表情识别模型未加载，将只进行人脸检测")
 
+            self.current_image = None
+
             # 设置UI状态
             self.start_button.setText("停止检测")
             self.save_button.setEnabled(False)
@@ -736,13 +736,11 @@ class FaceDetectionApp(QMainWindow):
             # 连接信号
             self.video_thread.change_pixmap_signal.connect(self.update_image)
             self.video_thread.progress_signal.connect(self.update_progress)
+            self.video_thread.finished.connect(self.detection_finished_callback)
 
             # 启动线程
             self.video_thread.start()
 
-            # 对于图片模式，需要在线程结束后自动更新UI状态
-            if mode == 1:  # 图片模式
-                self.video_thread.finished.connect(lambda: self.image_processed_callback())
     def update_image(self, cv_img):
         """更新图像显示"""
         qt_img = self.convert_cv_qt(cv_img)
@@ -764,7 +762,7 @@ class FaceDetectionApp(QMainWindow):
 
     def save_result(self):
         """保存结果"""
-        if not hasattr(self, 'current_image'):
+        if self.current_image is None:
             QMessageBox.warning(self, "警告", "没有可保存的结果")
             return
 
@@ -776,9 +774,12 @@ class FaceDetectionApp(QMainWindow):
         if file_path:
             try:
                 # 创建目录
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                directory = os.path.dirname(file_path)
+                if directory:
+                    os.makedirs(directory, exist_ok=True)
                 # 保存图像
-                cv2.imwrite(file_path, self.current_image)
+                if not cv2.imwrite(file_path, self.current_image):
+                    raise OSError(f"无法写入文件: {file_path}")
                 QMessageBox.information(self, "成功", f"结果已保存至: {file_path}")
             except Exception as e:
                 QMessageBox.critical(self, "错误", f"保存失败: {str(e)}")
@@ -791,17 +792,17 @@ class FaceDetectionApp(QMainWindow):
 
         event.accept()
 
-    def image_processed_callback(self):
-        """图片处理完成后的回调函数"""
+    def detection_finished_callback(self):
+        """检测线程结束后的回调函数"""
         # 更新UI状态
         self.start_button.setText("开始检测")
-        self.save_button.setEnabled(True)
+        self.save_button.setEnabled(self.current_image is not None)
         self.mode_combo.setEnabled(True)
-        self.file_button.setEnabled(True)
+        self.file_button.setEnabled(self.mode_combo.currentIndex() > 0)
         self.model_combo.setEnabled(True)
         self.progress_group.setVisible(False)
 
-        # 清除视频线程引用，允许再次检测同一图片
+        # 清除视频线程引用，允许再次检测
         self.video_thread = None
 
 

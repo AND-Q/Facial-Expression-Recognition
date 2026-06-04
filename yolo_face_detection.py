@@ -1,30 +1,78 @@
 import cv2
 import numpy as np
 from ultralytics import YOLO
-import time
 from PIL import Image, ImageDraw, ImageFont
 import os
 import argparse
-import torch
+
+
+DEFAULT_EMOTION_MODEL_PATH = "runs/classify/fer2013_plus_optimized/weights/best.pt"
+DOWNLOAD_HINT = "请先运行: python scripts/download_assets.py --models"
+EMOTION_NAME_MAP = {
+    "anger": "愤怒",
+    "angry": "愤怒",
+    "disgust": "厌恶",
+    "fear": "恐惧",
+    "happy": "高兴",
+    "happiness": "高兴",
+    "neutral": "中性",
+    "sad": "悲伤",
+    "sadness": "悲伤",
+    "surprise": "惊讶",
+    "surprised": "惊讶",
+}
 
 
 def download_face_model():
     """下载YOLOv11人脸检测模型"""
     model_path = "yolov11n-face.pt"
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"人脸检测模型文件不存在: {model_path}\n{DOWNLOAD_HINT}")
 
     return model_path
+
+
+def get_emotion_label(model, class_id):
+    """从模型类别名中获取表情标签，避免不同模型类别顺序不一致时显示错误。"""
+    names = getattr(model, "names", None)
+    label = None
+
+    if isinstance(names, dict):
+        label = names.get(int(class_id), names.get(str(class_id)))
+    elif isinstance(names, (list, tuple)) and int(class_id) < len(names):
+        label = names[int(class_id)]
+
+    if label is None:
+        return f"类别{class_id}"
+
+    label_text = str(label)
+    return EMOTION_NAME_MAP.get(label_text.lower(), label_text)
+
+
+def load_emotion_model(model_path=DEFAULT_EMOTION_MODEL_PATH):
+    """加载表情识别模型，缺失时返回 None，便于只做人脸检测。"""
+    if not os.path.exists(model_path):
+        print(f"警告：表情识别模型文件不存在: {model_path}")
+        print(DOWNLOAD_HINT)
+        print("将仅进行人脸检测，不进行表情识别")
+        return None
+    return YOLO(model_path)
 
 
 def load_font():
     """加载中文字体"""
     # 设置中文字体
-    font_path = None
-    if os.path.exists("C:/Windows/Fonts/simhei.ttf"):
-        font_path = "C:/Windows/Fonts/simhei.ttf"
-    elif os.path.exists("C:/Windows/Fonts/simsun.ttc"):
-        font_path = "C:/Windows/Fonts/simsun.ttc"
-    elif os.path.exists("C:/Windows/Fonts/msyh.ttc"):
-        font_path = "C:/Windows/Fonts/msyh.ttc"
+    font_candidates = [
+        "C:/Windows/Fonts/simhei.ttf",
+        "C:/Windows/Fonts/simsun.ttc",
+        "C:/Windows/Fonts/msyh.ttc",
+        "/System/Library/Fonts/PingFang.ttc",
+        "/System/Library/Fonts/STHeiti Medium.ttc",
+        "/Library/Fonts/Arial Unicode.ttf",
+        "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    ]
+    font_path = next((path for path in font_candidates if os.path.exists(path)), None)
 
     # 如果找不到系统字体，尝试使用fonts目录下的字体
     if font_path is None:
@@ -114,16 +162,7 @@ def detect_faces_video():
     face_model = YOLO(face_model_path)  # 使用专门的人脸检测模型
 
     # 加载表情识别模型
-    emotion_model_path = 'runs/classify/fer2013_plus_optimized/weights/best.pt'
-    if not os.path.exists(emotion_model_path):
-        print(f"警告：表情识别模型文件不存在: {emotion_model_path}")
-        print("将仅进行人脸检测，不进行表情识别")
-        emotion_model = None
-    else:
-        emotion_model = YOLO(emotion_model_path)
-
-    # 表情标签
-    emotion_labels = ['愤怒', '厌恶', '高兴', '中性', '悲伤', '惊讶']
+    emotion_model = load_emotion_model()
 
     # 加载字体
     font = load_font()
@@ -193,7 +232,7 @@ def detect_faces_video():
                     confidence = max(probs)
 
                     # 获取表情标签
-                    emotion = emotion_labels[class_id]
+                    emotion = get_emotion_label(emotion_model, class_id)
 
                     # 在图像上显示预测结果
                     text = f"{emotion}: {confidence:.2f}"
@@ -228,17 +267,7 @@ def detect_faces_image(image_path):
     face_model = YOLO(face_model_path)  # 使用专门的人脸检测模型
 
     # 加载表情识别模型
-    emotion_model_path = 'runs/classify/fer2013_plus_optimized/weights/best.pt'
-    if not os.path.exists(emotion_model_path):
-        print(f"警告：表情识别模型文件不存在: {emotion_model_path}")
-        print("将仅进行人脸检测，不进行表情识别")
-        emotion_model = None
-    else:
-        emotion_model = YOLO(emotion_model_path)
-
-    # 表情标签
-    emotion_labels = ['愤怒', '厌恶', '高兴', '中性', '悲伤', '惊讶']
-    # {0: 'anger', 1: 'disgust', 2: 'happy', 3: 'neutral', 4: 'sad', 5: 'surprise'}
+    emotion_model = load_emotion_model()
     # 加载字体
     font = load_font()
 
@@ -306,7 +335,7 @@ def detect_faces_image(image_path):
                 confidence = max(probs)
 
                 # 获取表情标签
-                emotion = emotion_labels[class_id]
+                emotion = get_emotion_label(emotion_model, class_id)
 
                 # 在图像上显示预测结果
                 text = f"人脸 {j + 1}: {emotion} ({confidence:.2f})"
@@ -345,16 +374,7 @@ def detect_faces_video_file(video_path):
     face_model = YOLO(face_model_path)  # 使用专门的人脸检测模型
 
     # 加载表情识别模型
-    emotion_model_path = 'runs/classify/fer2013_plus_optimized/weights/best.pt'
-    if not os.path.exists(emotion_model_path):
-        print(f"警告：表情识别模型文件不存在: {emotion_model_path}")
-        print("将仅进行人脸检测，不进行表情识别")
-        emotion_model = None
-    else:
-        emotion_model = YOLO(emotion_model_path)
-
-    # 表情标签
-    emotion_labels = ['愤怒', '厌恶', '高兴', '中性', '悲伤', '惊讶']
+    emotion_model = load_emotion_model()
 
     # 加载字体
     font = load_font()
@@ -451,7 +471,7 @@ def detect_faces_video_file(video_path):
                     confidence = max(probs)
 
                     # 获取表情标签
-                    emotion = emotion_labels[class_id]
+                    emotion = get_emotion_label(emotion_model, class_id)
 
                     # 在图像上显示预测结果
                     text = f"{emotion}: {confidence:.2f}"
@@ -491,8 +511,40 @@ def detect_faces_video_file(video_path):
 
 def main():
     """主函数，根据输入类型选择相应的处理方式"""
-    # 获取用户输入
-    input_path = input("请输入图片/视频文件路径（直接回车使用摄像头）：").strip()
+    parser = argparse.ArgumentParser(description="YOLO人脸检测与表情识别")
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument("--camera", action="store_true", help="使用摄像头实时检测")
+    mode_group.add_argument("--image", help="图片文件路径")
+    mode_group.add_argument("--video", help="视频文件路径")
+    parser.add_argument("input_path", nargs="?", help="图片或视频文件路径；不提供则使用摄像头")
+    args = parser.parse_args()
+
+    if args.camera:
+        print("启动视频流人脸检测模式...")
+        detect_faces_video()
+        return
+
+    if args.image:
+        input_path = args.image
+        if not os.path.exists(input_path):
+            print(f"错误：文件不存在: {input_path}")
+            return
+        print(f"正在处理图片: {input_path}")
+        detect_faces_image(input_path)
+        return
+
+    if args.video:
+        input_path = args.video
+        if not os.path.exists(input_path):
+            print(f"错误：文件不存在: {input_path}")
+            return
+        print(f"正在处理视频: {input_path}")
+        detect_faces_video_file(input_path)
+        return
+
+    input_path = args.input_path
+    if input_path is None:
+        input_path = input("请输入图片/视频文件路径（直接回车使用摄像头）：").strip()
 
     # 根据输入类型选择相应的处理方式
     if not input_path:
@@ -523,4 +575,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
