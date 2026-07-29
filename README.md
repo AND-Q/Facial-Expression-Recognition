@@ -290,7 +290,11 @@
    python scripts/download_assets.py --datasets
    ```
 
-   默认下载地址是本仓库 `v1.0.0` Release。维护者需要在 Release 中上传以下模型资产：
+   默认下载地址是本仓库 `v1.0.0` Release：
+   - Release 页面：<https://github.com/AND-Q/Facial-Expression-Recognition/releases/tag/v1.0.0>
+   - Release 直链前缀：`https://github.com/AND-Q/Facial-Expression-Recognition/releases/download/v1.0.0/`
+
+   维护者需要在 Release 中上传以下模型资产：
 
    | Release 文件名 | 下载后路径 | 用途 |
    | --- | --- | --- |
@@ -302,10 +306,10 @@
 
    可选数据集资产：
 
-   | Release 文件名 | 下载后路径 |
-   | --- | --- |
-   | `affectnet.zip` | `datasets/affectnet.zip` |
-   | `fer2013plus.zip` | `datasets/fer2013plus.zip` |
+   | Release 文件名 | 下载后路径 | 用途 |
+   | --- | --- | --- |
+   | `affectnet.zip` | `datasets/affectnet.zip` | AffectNet 原始训练数据压缩包（可选） |
+   | `fer2013plus.zip` | `datasets/fer2013plus.zip` | FER2013Plus 训练数据压缩包（可选） |
 
    如果使用其他 Release 标签：
 
