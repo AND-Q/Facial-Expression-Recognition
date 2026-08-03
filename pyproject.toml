@@ -86,7 +86,7 @@ dev = [
     "pytest-cov",
     "coverage[toml]",
     "mkdocs>=1.6.0",
-    "mkdocs-material>=9.5.9",
+    "mkdocs-material>=9.7.7",
     "mkdocstrings[python]",
     "mkdocs-ultralytics-plugin>=0.1.19", # for meta descriptions and images, dates and authors
     "mkdocs-macros-plugin>=1.0.5"  # duplicating content (i.e. export tables) in multiple places
