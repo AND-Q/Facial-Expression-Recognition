@@ -112,7 +112,7 @@ logging = [
     "mlflow",  # https://docs.ultralytics.com/integrations/mlflow/
 ]
 extra = [
-    "hub-sdk>=0.0.12", # Ultralytics HUB
+    "hub-sdk>=0.0.25", # Ultralytics HUB
     "ipython", # interactive notebook
     "albumentations>=1.4.6", # training augmentations
     "pycocotools>=2.0.7", # COCO mAP
